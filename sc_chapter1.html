@@ -4,7 +4,31 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>SCM 1010 · Chapter 1 — Supply Chain Management</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+/* Self-contained fonts — no external requests needed */
+@import url('data:text/css,');
+</style>
+<style id="font-override">
+:root {
+  --font-h: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-b: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+/* Emulate display font weight with system fonts */
+.hero-title, .sc-title, .view-title, .cc-title, .pc-title,
+.pil .p-title, .pil .p-num, .hstat .val, .ic-num,
+.tb-title, .logo, .stu-av, .nav-logo,
+h1, h2, h3, .btn-start, .btn-nav, .next-btn,
+.sc-tag, .view-tag, .def-card .dc-label,
+.sb-head, .prog-row strong, .sb-badge,
+.tl-year, .quiz-q, .quiz-feedback strong,
+.notif .nt, .vid-scene-title, #vid-scene-title,
+.ch-pill, .stu-nm {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif !important;
+  letter-spacing: -0.01em;
+}
+.hero-title { font-weight: 800 !important; }
+.sc-title { font-weight: 800 !important; }
+</style>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -15,7 +39,7 @@
   --green:#10b981;--green2:#34d399;
   --red:#ef4444;--amber:#f59e0b;--purple:#8b5cf6;
   --white:#eef2f7;--gray:#3d5470;--gray2:#6b849e;--gray3:#9ab0c5;
-  --font-h:'Syne',sans-serif;--font-b:'Inter',sans-serif;
+  --font-h:'Segoe UI',system-ui,-apple-system,sans-serif;--font-b:'Segoe UI',system-ui,-apple-system,sans-serif;
 }
 html,body{height:100%;background:var(--bg);color:var(--white);font-family:var(--font-b);font-size:14px;overflow:hidden}
 
@@ -708,7 +732,7 @@ function animateFlow(){
     ctx.fillStyle=n.col+'20';ctx.fill();
     ctx.strokeStyle=n.col;ctx.lineWidth=1.5;ctx.stroke();
     ctx.fillStyle='rgba(238,242,247,.85)';
-    ctx.font=`500 ${n.id==='mfg'?11:9}px Inter,sans-serif`;
+    ctx.font=`500 ${n.id==='mfg'?11:9}px system-ui,sans-serif`;
     ctx.textAlign='center';ctx.textBaseline='top';
     ctx.fillText(n.label,x,y+r+3);
   });
@@ -767,13 +791,6 @@ function shuffleQuestions(){
 }
 
 const QUESTIONS=[...QUESTION_BANK.slice(0,5)]; // initial load
-
-  {q:"Stock & Lambert define a supply chain as a system involving which of the following?",opts:["Only the manufacturer and its direct customers","Organizations, people, activities, information, and resources that move a product from supplier to customer","Just the transportation and warehousing companies that move physical goods","The financial institutions that fund production and distribution"],correct:1,explain:"The Stock & Lambert definition is deliberately broad — it includes every organization, person, activity, information exchange, and resource involved in creating and delivering a product. This breadth is intentional: you cannot manage the supply chain if you only see part of it."},
-  {q:"Which of the three supply chain flows moves primarily in an UPSTREAM direction?",opts:["Product flow","Information flow","Financial flow","Demand flow"],correct:2,explain:"Financial flow — payments, invoices, credit terms — moves upstream from customers toward suppliers. Product flows downstream. Information flows in both directions. Understanding the direction of each flow is essential for designing supply chain processes."},
-  {q:"The term 'supply chain management' was formally coined in what year?",opts:["1970","1982","1995","2001"],correct:1,explain:"Keith Oliver at Booz Allen Hamilton coined the phrase 'supply chain management' in a 1982 Financial Times interview — formalizing the idea that suppliers, manufacturers, and distributors should be managed as a single integrated system, not as separate entities."},
-  {q:"The bullwhip effect refers to which supply chain phenomenon?",opts:["The tendency for freight costs to increase during peak seasons","The amplification of small demand changes into large order swings as you move upstream","The impact of weather disruptions on transportation networks","The oscillation in service levels caused by warehouse stockouts"],correct:1,explain:"The bullwhip effect occurs when each tier in the supply chain adds a safety buffer to the order it receives — causing small retail demand fluctuations to amplify into huge order swings at the manufacturer level. It is caused by lack of information sharing and can be eliminated by sharing real demand data across the supply chain."},
-  {q:"According to the Stock & Lambert model, which pillar addresses 'who the supply chain members are and how they connect'?",opts:["Business Processes","Management Components","Supply Chain Network Structure","Integration Framework"],correct:2,explain:"Supply Chain Network Structure is the first pillar of the Stock & Lambert model. It defines which companies are part of the supply chain, how many tiers it has, and how members are connected — upstream to downstream. This is the foundation on which processes and management components are built."},
-];
 let qIdx=0;
 
 function buildQuiz(){
@@ -875,7 +892,7 @@ const VID_SCENES = [
     highlight:['steelmill','plastics','fabric']
   },
   {
-    id:'mfg', title:'The Manufacturer — The Network\'s Central Node', duration:360,
+    id:"mfg", title:"The Manufacturer — The Network's Central Node", duration:360,
     narration:"Components converge at the manufacturer — the central node of the supply chain. Here, steel becomes a car frame. Plastic becomes a bumper. Fabric becomes a seat. The manufacturer is where all upstream flows combine into a finished product. Notice how removing this single node would freeze the entire network.",
     nodes:[
       {id:'steelmill',label:'Steel Mill',sub:'T1',col:'#3b82f6',x:.12,y:.2},
@@ -1139,10 +1156,10 @@ function vidRenderScene() {
     // label
     ctx.globalAlpha = alpha;
     ctx.fillStyle = '#eef2f7';
-    ctx.font = `${isHL ? '600' : '500'} ${n.id === 'mfg' ? 12 : 10}px Syne,sans-serif`;
+    ctx.font = `${isHL ? '600' : '500'} ${n.id === 'mfg' ? 12 : 10}px system-ui,sans-serif`;
     ctx.textAlign = 'center'; ctx.textBaseline = 'top';
     ctx.fillText(n.label, p.x, p.y + r + 4);
-    ctx.font = '400 8px Inter,sans-serif'; ctx.fillStyle = '#6b849e';
+    ctx.font = '400 8px system-ui,sans-serif'; ctx.fillStyle = '#6b849e';
     ctx.fillText(n.sub, p.x, p.y + r + 16);
     ctx.globalAlpha = 1;
   });
@@ -1189,7 +1206,7 @@ function drawFlowArrow(ctx, x1, y1, x2, y2, col, alpha, label, tick, bidirection
     ctx.strokeStyle = col; ctx.lineWidth = 2; ctx.stroke(); ctx.restore();
   }
   // label
-  ctx.font = '600 11px Syne,sans-serif'; ctx.fillStyle = col;
+  ctx.font = '600 11px system-ui,sans-serif'; ctx.fillStyle = col;
   ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
   ctx.fillText(label, (x1 + x2) / 2, y1 - 6);
   ctx.restore();
