@@ -1,0 +1,1242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SCM 1010 · Chapter 1 — Supply Chain Management</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#07090e;--bg2:#0d1320;--bg3:#121c2e;--bg4:#172238;
+  --border:#1c2d42;--border2:#243650;
+  --gold:#c9a84c;--gold2:#e8c96a;--goldf:#fef3c7;
+  --blue:#3b82f6;--blue2:#60a5fa;--blue3:#dbeafe;
+  --green:#10b981;--green2:#34d399;
+  --red:#ef4444;--amber:#f59e0b;--purple:#8b5cf6;
+  --white:#eef2f7;--gray:#3d5470;--gray2:#6b849e;--gray3:#9ab0c5;
+  --font-h:'Syne',sans-serif;--font-b:'Inter',sans-serif;
+}
+html,body{height:100%;background:var(--bg);color:var(--white);font-family:var(--font-b);font-size:14px;overflow:hidden}
+
+/* ── SHELL ── */
+#shell{display:grid;grid-template-rows:52px 1fr;height:100vh}
+/* topbar */
+.topbar{background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 1.4rem;gap:1rem}
+.tb-left{display:flex;align-items:center;gap:.9rem}
+.logo{width:32px;height:32px;background:var(--gold);border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:var(--font-h);font-weight:800;font-size:.8rem;color:var(--bg);flex-shrink:0}
+.tb-title{font-family:var(--font-h);font-size:.9rem;font-weight:700}
+.tb-sub{font-size:.72rem;color:var(--gray2);margin-left:.3rem}
+.tb-right{display:flex;align-items:center;gap:.7rem}
+.ch-pills{display:flex;gap:.3rem}
+.ch-pill{padding:.25rem .65rem;border-radius:20px;font-size:.7rem;font-weight:600;letter-spacing:.04em;border:1px solid var(--border);color:var(--gray2);cursor:pointer;transition:all .2s;font-family:var(--font-h);text-decoration:none;display:inline-block}
+.ch-pill:hover{border-color:var(--border2);color:var(--white)}
+.ch-pill.active{background:rgba(201,168,76,.12);border-color:var(--gold);color:var(--gold)}
+.ch-pill.locked{opacity:.4;cursor:not-allowed;pointer-events:none}
+.stu-pill{display:flex;align-items:center;gap:.5rem;background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:.22rem .7rem .22rem .3rem}
+.stu-av{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--font-h);font-weight:700;font-size:.65rem;flex-shrink:0;color:var(--bg)}
+.stu-nm{font-size:.75rem;font-weight:500}
+
+/* ── MAIN LAYOUT ── */
+.main-layout{display:grid;grid-template-columns:230px 1fr;height:100%;overflow:hidden}
+
+/* ── SIDEBAR ── */
+.sidebar{background:var(--bg2);border-right:1px solid var(--border);overflow-y:auto;padding:.9rem .7rem;display:flex;flex-direction:column;gap:.15rem}
+.sb-head{font-size:.62rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--gray);padding:.6rem .5rem .2rem}
+.sb-item{display:flex;align-items:center;gap:.55rem;padding:.5rem .6rem;border-radius:7px;cursor:pointer;font-size:.8rem;color:var(--gray2);border:none;background:none;width:100%;text-align:left;transition:all .15s}
+.sb-item:hover{background:var(--bg3);color:var(--white)}
+.sb-item.active{background:rgba(201,168,76,.1);color:var(--gold)}
+.sb-icon{font-size:.9rem;width:18px;text-align:center;flex-shrink:0}
+.sb-badge{margin-left:auto;font-size:.62rem;font-weight:600;padding:.1rem .38rem;border-radius:4px;background:rgba(201,168,76,.12);color:var(--gold)}
+/* progress */
+.prog-box{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:.8rem;margin-bottom:.5rem}
+.prog-row{display:flex;justify-content:space-between;margin-bottom:.4rem}
+.prog-row span{font-size:.7rem;color:var(--gray2)}
+.prog-row strong{font-size:.7rem;color:var(--gold);font-family:var(--font-h)}
+.prog-track{height:3px;background:var(--bg4);border-radius:3px}
+.prog-fill{height:3px;background:var(--gold);border-radius:3px;transition:width .5s ease}
+
+/* ── CONTENT ── */
+.content-area{overflow-y:auto;overflow-x:hidden;position:relative}
+
+/* ── SECTIONS ── */
+.sec{display:none;padding:0}
+.sec.active{display:block}
+
+/* ── HERO SECTION ── */
+.hero{min-height:calc(100vh - 52px);display:flex;flex-direction:column;justify-content:center;padding:3rem 3.5rem;position:relative;overflow:hidden;background:radial-gradient(ellipse at 20% 50%, rgba(201,168,76,.06) 0%, transparent 60%), radial-gradient(ellipse at 80% 20%, rgba(59,130,246,.05) 0%, transparent 50%)}
+.hero-eyebrow{font-size:.72rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem;opacity:0;animation:fadeUp .6s .1s forwards}
+.hero-title{font-family:var(--font-h);font-size:clamp(2.2rem,4vw,3.8rem);font-weight:800;line-height:1.05;margin-bottom:1.2rem;opacity:0;animation:fadeUp .6s .25s forwards}
+.hero-title em{font-style:normal;color:var(--gold)}
+.hero-desc{font-size:.95rem;color:var(--gray3);max-width:580px;line-height:1.8;margin-bottom:2.5rem;opacity:0;animation:fadeUp .6s .4s forwards}
+.hero-stats{display:flex;gap:2.5rem;margin-bottom:2.5rem;opacity:0;animation:fadeUp .6s .55s forwards}
+.hstat{text-align:left}
+.hstat .val{font-family:var(--font-h);font-size:2rem;font-weight:800;color:var(--white);line-height:1}
+.hstat .lbl{font-size:.72rem;color:var(--gray2);margin-top:.2rem}
+.hero-cta{opacity:0;animation:fadeUp .6s .7s forwards}
+.btn-start{background:var(--gold);color:var(--bg);font-family:var(--font-h);font-weight:700;font-size:.9rem;letter-spacing:.04em;border:none;border-radius:8px;padding:.8rem 2rem;cursor:pointer;transition:background .2s,transform .1s}
+.btn-start:hover{background:var(--gold2);transform:translateY(-1px)}
+/* floating network bg */
+.hero-bg-net{position:absolute;right:-2rem;top:50%;transform:translateY(-50%);opacity:.07;pointer-events:none;width:480px}
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── SECTION CONTENT ── */
+.sc-wrap{padding:2.5rem 3.5rem 4rem;max-width:1000px}
+.sc-tag{font-size:.68rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:.5rem}
+.sc-title{font-family:var(--font-h);font-size:clamp(1.6rem,2.5vw,2.2rem);font-weight:800;line-height:1.1;margin-bottom:.7rem}
+.sc-lead{color:var(--gray3);font-size:.9rem;max-width:650px;line-height:1.8;margin-bottom:2rem}
+
+/* ── ANIMATED FLOW DIAGRAM ── */
+.flow-diagram{position:relative;margin:1.5rem 0 2rem;background:var(--bg2);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+#flow-canvas{display:block;width:100%}
+.flow-legend{display:flex;flex-wrap:wrap;gap:.5rem 1.5rem;padding:.7rem 1.2rem;border-top:1px solid var(--border);font-size:.75rem;color:var(--gray2)}
+.fl-item{display:flex;align-items:center;gap:.4rem}
+.fl-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+
+/* ── DEFINITION CARD ── */
+.def-card{background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--gold);border-radius:10px;padding:1.3rem 1.5rem;margin-bottom:1.2rem}
+.def-card .dc-label{font-size:.68rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:.4rem}
+.def-card .dc-text{font-size:.9rem;line-height:1.8;color:var(--gray3)}
+.def-card .dc-text strong{color:var(--white);font-weight:500}
+
+/* ── PERSPECTIVE CARDS ── */
+.persp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.8rem;margin:1.2rem 0}
+.pc{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1.1rem;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.pc::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity .2s}
+.pc:hover{border-color:var(--border2);transform:translateY(-2px)}
+.pc.active{border-color:var(--gold)}
+.pc-icon{font-size:1.3rem;margin-bottom:.5rem}
+.pc-title{font-family:var(--font-h);font-size:.85rem;font-weight:700;margin-bottom:.3rem}
+.pc-short{font-size:.78rem;color:var(--gray2);line-height:1.5}
+.pc-detail{display:none;margin-top:.7rem;padding-top:.7rem;border-top:1px solid var(--border);font-size:.78rem;color:var(--gray3);line-height:1.65}
+.pc.active .pc-detail{display:block}
+
+/* ── TIMELINE ── */
+.timeline{position:relative;padding-left:2rem;margin:1.5rem 0}
+.timeline::before{content:'';position:absolute;left:.65rem;top:0;bottom:0;width:1px;background:linear-gradient(to bottom, var(--gold), var(--blue), var(--green));opacity:.4}
+.tl-item{position:relative;margin-bottom:1.5rem;opacity:0;transform:translateX(-10px);transition:all .5s}
+.tl-item.visible{opacity:1;transform:translateX(0)}
+.tl-dot{position:absolute;left:-1.9rem;top:.3rem;width:12px;height:12px;border-radius:50%;border:2px solid var(--gold);background:var(--bg);flex-shrink:0}
+.tl-year{font-family:var(--font-h);font-size:.72rem;font-weight:700;color:var(--gold);letter-spacing:.06em;margin-bottom:.2rem}
+.tl-event{font-size:.85rem;font-weight:500;margin-bottom:.15rem}
+.tl-detail{font-size:.78rem;color:var(--gray2);line-height:1.55}
+
+/* ── IMPACT CARDS ── */
+.impact-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.8rem;margin:1.2rem 0}
+.ic{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1.2rem;transition:border-color .2s}
+.ic:hover{border-color:var(--border2)}
+.ic-num{font-family:var(--font-h);font-size:1.8rem;font-weight:800;line-height:1;margin-bottom:.3rem}
+.ic-title{font-size:.82rem;font-weight:600;margin-bottom:.3rem}
+.ic-desc{font-size:.77rem;color:var(--gray2);line-height:1.55}
+
+/* ── THREE PILLARS ── */
+.pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem;margin:1.2rem 0}
+.pil{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1.3rem;text-align:center;position:relative;overflow:hidden;cursor:pointer;transition:all .25s}
+.pil:hover{transform:translateY(-3px)}
+.pil .p-bg{position:absolute;inset:0;opacity:0;transition:opacity .25s}
+.pil:hover .p-bg{opacity:1}
+.pil .p-num{font-family:var(--font-h);font-size:2rem;font-weight:800;margin-bottom:.4rem;position:relative}
+.pil .p-title{font-family:var(--font-h);font-size:.88rem;font-weight:700;margin-bottom:.4rem;position:relative}
+.pil .p-desc{font-size:.77rem;color:var(--gray2);line-height:1.55;position:relative}
+.pil-detail{display:none;margin-top:.8rem;padding-top:.8rem;border-top:1px solid var(--border);font-size:.78rem;color:var(--gray3);line-height:1.65;text-align:left;position:relative}
+.pil.open .pil-detail{display:block}
+
+/* ── SOCIETAL ISSUES ── */
+.issues-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:.8rem;margin:1.2rem 0}
+.issue-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1.2rem;display:flex;gap:.8rem;align-items:flex-start;transition:border-color .2s}
+.issue-card:hover{border-color:var(--border2)}
+.issue-icon{font-size:1.3rem;flex-shrink:0;margin-top:.1rem}
+.issue-body .ib-title{font-size:.85rem;font-weight:600;margin-bottom:.25rem}
+.issue-body .ib-desc{font-size:.78rem;color:var(--gray2);line-height:1.55}
+
+/* ── QUIZ ── */
+.quiz-block{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1.5rem;margin:1.5rem 0}
+.quiz-q{font-size:.92rem;font-weight:500;margin-bottom:1rem;line-height:1.6}
+.quiz-opts{display:flex;flex-direction:column;gap:.5rem}
+.qopt{background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:.65rem 1rem;cursor:pointer;font-size:.83rem;transition:all .2s;text-align:left}
+.qopt:hover{border-color:var(--border2);color:var(--white)}
+.qopt.correct{border-color:var(--green);background:rgba(16,185,129,.08);color:var(--green2)}
+.qopt.wrong{border-color:var(--red);background:rgba(239,68,68,.08);color:#f87171}
+.qopt.show-correct{border-color:var(--green);background:rgba(16,185,129,.05);color:var(--green2)}
+.quiz-feedback{display:none;margin-top:1rem;padding:.8rem 1rem;border-radius:7px;font-size:.82rem;line-height:1.6}
+.quiz-feedback.show{display:block}
+.quiz-feedback.good{background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);color:var(--green2)}
+.quiz-feedback.bad{background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.2);color:#f87171}
+.btn-next-q{margin-top:.8rem;background:var(--gold);color:var(--bg);font-family:var(--font-h);font-weight:700;font-size:.8rem;border:none;border-radius:7px;padding:.5rem 1.2rem;cursor:pointer;display:none}
+.btn-next-q.show{display:inline-block}
+
+/* ── NAV ROW ── */
+.nav-row{display:flex;justify-content:space-between;align-items:center;padding:2rem 3.5rem 3rem;border-top:1px solid var(--border);margin-top:2rem}
+.btn-nav{background:var(--bg2);color:var(--white);font-family:var(--font-h);font-weight:600;font-size:.82rem;border:1px solid var(--border);border-radius:8px;padding:.6rem 1.3rem;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:.4rem}
+.btn-nav:hover{border-color:var(--border2);background:var(--bg3)}
+.btn-nav.primary{background:var(--gold);color:var(--bg);border-color:var(--gold)}
+.btn-nav.primary:hover{background:var(--gold2)}
+
+/* ── SCROLL ANIMATIONS ── */
+.reveal{opacity:0;transform:translateY(20px);transition:opacity .5s, transform .5s}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+/* ── NOTIFICATION ── */
+.notif{position:fixed;top:62px;right:1.2rem;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:.9rem 1.1rem;max-width:280px;z-index:300;transform:translateX(320px);transition:transform .35s cubic-bezier(.175,.885,.32,1.275)}
+.notif.show{transform:translateX(0)}
+.notif.success{border-color:rgba(16,185,129,.4)}
+.notif.warn{border-color:rgba(245,158,11,.4)}
+.notif .nt{font-family:var(--font-h);font-size:.85rem;font-weight:700;margin-bottom:.2rem}
+.notif .nb{font-size:.77rem;color:var(--gray2);line-height:1.5}
+</style>
+</head>
+<body>
+
+<!-- LOGIN OVERLAY -->
+<div id="login-overlay" style="position:fixed;inset:0;background:var(--bg);z-index:500;display:flex;align-items:center;justify-content:center;padding:1.5rem">
+  <div style="width:100%;max-width:420px">
+    <div style="display:flex;align-items:center;gap:.8rem;margin-bottom:2.5rem">
+      <div class="logo">SC</div>
+      <div><div style="font-family:var(--font-h);font-weight:700;font-size:.9rem">Supply Chain Lab</div><div style="font-size:.72rem;color:var(--gray2)">SCM 1010 · Georgia College</div></div>
+    </div>
+    <div style="font-family:var(--font-h);font-size:2.4rem;font-weight:800;line-height:1.1;margin-bottom:.6rem">Chapter 1.<br/><span style="color:var(--gold)">Supply Chain<br/>Management.</span></div>
+    <p style="color:var(--gray2);font-size:.88rem;line-height:1.7;margin-bottom:2rem">An animated, visual introduction to supply chain management — what it is, where it came from, and why it matters to every business on earth.</p>
+    <div style="margin-bottom:1rem">
+      <label style="display:block;font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gray2);margin-bottom:.4rem">Full Name</label>
+      <input id="inp-name" type="text" placeholder="e.g. Jordan Williams" style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:.75rem 1rem;color:var(--white);font-family:var(--font-b);font-size:.9rem;outline:none" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--border2)'"/>
+    </div>
+    <div style="margin-bottom:1.2rem">
+      <label style="display:block;font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gray2);margin-bottom:.4rem">Student ID</label>
+      <input id="inp-id" type="text" placeholder="e.g. 20240042" style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:.75rem 1rem;color:var(--white);font-family:var(--font-b);font-size:.9rem;outline:none" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--border2)'"/>
+    </div>
+    <button onclick="doLogin()" style="width:100%;background:var(--gold);color:var(--bg);font-family:var(--font-h);font-weight:700;font-size:.95rem;border:none;border-radius:8px;padding:.85rem;cursor:pointer">Enter Chapter 1 →</button>
+  </div>
+</div>
+
+<!-- APP SHELL -->
+<div id="shell">
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="tb-left">
+      <div class="logo">SC</div>
+      <div><span class="tb-title">Supply Chain Lab</span><span class="tb-sub">· SCM 1010</span></div>
+    </div>
+    <div class="tb-right">
+      <div class="ch-pills">
+        <span class="ch-pill active">Ch 1</span>
+        <span class="ch-pill locked" id="pill-ch2" style="cursor:default">Ch 2</span>
+        <span class="ch-pill locked">Ch 3</span>
+        <span class="ch-pill locked">Ch 4</span>
+        <span class="ch-pill locked">Ch 5</span>
+        <span class="ch-pill locked">Ch 6</span>
+      </div>
+      <div class="stu-pill">
+        <div class="stu-av" id="hdr-av" style="background:var(--gold)">JW</div>
+        <span class="stu-nm" id="hdr-nm">Student</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="main-layout">
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="prog-box">
+        <div class="prog-row"><span>Chapter Progress</span><strong id="prog-pct">0%</strong></div>
+        <div class="prog-track"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+      </div>
+      <div class="sb-head">Chapter 1</div>
+      <button class="sb-item active" id="sb-hero" onclick="goSec('hero')"><span class="sb-icon">🏠</span>Introduction</button>
+      <button class="sb-item" id="sb-what" onclick="goSec('what')"><span class="sb-icon">🔗</span>What Is a Supply Chain?</button>
+      <button class="sb-item" id="sb-video" onclick="goSec('video')"><span class="sb-icon">🎬</span>Animated Explainer<span class="sb-badge" style="background:rgba(239,68,68,.15);color:#f87171">Video</span></button>
+      <button class="sb-item" id="sb-perspectives" onclick="goSec('perspectives')"><span class="sb-icon">🔭</span>Perspectives & Definitions</button>
+      <button class="sb-item" id="sb-history" onclick="goSec('history')"><span class="sb-icon">📅</span>Historical Development</button>
+      <button class="sb-item" id="sb-societal" onclick="goSec('societal')"><span class="sb-icon">🌍</span>Societal Impact</button>
+      <button class="sb-item" id="sb-model" onclick="goSec('model')"><span class="sb-icon">⚙️</span>The SCM Model</button>
+      <button class="sb-item" id="sb-quiz" onclick="goSec('quiz')"><span class="sb-icon">🎯</span>Check Your Understanding<span class="sb-badge">5 Qs</span></button>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content-area" id="content-area">
+
+      <!-- ═══ HERO ═══ -->
+      <div class="sec active" id="sec-hero">
+        <div class="hero">
+          <svg class="hero-bg-net" viewBox="0 0 480 360" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="60" cy="90" r="18" stroke="white" stroke-width="1"/>
+            <circle cx="60" cy="180" r="18" stroke="white" stroke-width="1"/>
+            <circle cx="60" cy="270" r="18" stroke="white" stroke-width="1"/>
+            <circle cx="180" cy="110" r="22" stroke="white" stroke-width="1.2"/>
+            <circle cx="180" cy="250" r="22" stroke="white" stroke-width="1.2"/>
+            <circle cx="300" cy="180" r="28" stroke="white" stroke-width="1.5"/>
+            <circle cx="400" cy="120" r="16" stroke="white" stroke-width="1"/>
+            <circle cx="400" cy="180" r="16" stroke="white" stroke-width="1"/>
+            <circle cx="400" cy="240" r="16" stroke="white" stroke-width="1"/>
+            <line x1="78" y1="90" x2="158" y2="110" stroke="white" stroke-width=".7" stroke-dasharray="4 3"/>
+            <line x1="78" y1="180" x2="158" y2="110" stroke="white" stroke-width=".7" stroke-dasharray="4 3"/>
+            <line x1="78" y1="180" x2="158" y2="250" stroke="white" stroke-width=".7" stroke-dasharray="4 3"/>
+            <line x1="78" y1="270" x2="158" y2="250" stroke="white" stroke-width=".7" stroke-dasharray="4 3"/>
+            <line x1="202" y1="110" x2="272" y2="170" stroke="white" stroke-width=".7" stroke-dasharray="4 3"/>
+            <line x1="202" y1="250" x2="272" y2="190" stroke="white" stroke-width=".7" stroke-dasharray="4 3"/>
+            <line x1="328" y1="170" x2="384" y2="130" stroke="white" stroke-width=".7" stroke-dasharray="4 3"/>
+            <line x1="328" y1="180" x2="384" y2="180" stroke="white" stroke-width=".7" stroke-dasharray="4 3"/>
+            <line x1="328" y1="190" x2="384" y2="230" stroke="white" stroke-width=".7" stroke-dasharray="4 3"/>
+          </svg>
+          <div class="hero-eyebrow">SCM 1010 · Chapter 1</div>
+          <div class="hero-title">Supply Chain<br/>Management,<br/><em>Operations &</em><br/><em>Integration</em></div>
+          <div class="hero-desc">Every product you have ever used traveled through a supply chain to reach you. This chapter explains what that means — and why managing it is one of the most consequential disciplines in modern business.</div>
+          <div class="hero-stats">
+            <div class="hstat"><div class="val">$22T</div><div class="lbl">Global logistics spend per year</div></div>
+            <div class="hstat"><div class="val">37M</div><div class="lbl">Supply chain jobs in the US alone</div></div>
+            <div class="hstat"><div class="val">4–8%</div><div class="lbl">Revenue impact of SC disruptions</div></div>
+          </div>
+          <div class="hero-cta">
+            <button class="btn-start" onclick="goSec('what')">Start Chapter 1 →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ WHAT IS A SUPPLY CHAIN ═══ -->
+      <div class="sec" id="sec-what">
+        <div class="sc-wrap">
+          <div class="sc-tag reveal">Chapter 1 · Foundations</div>
+          <div class="sc-title reveal">What Is a Supply Chain?</div>
+          <div class="sc-lead reveal">Before you can manage a supply chain, you need to see one. Watch how a product moves from raw material to customer — and notice every organization involved along the way.</div>
+
+          <div class="flow-diagram reveal">
+            <canvas id="flow-canvas" height="200"></canvas>
+            <div class="flow-legend">
+              <div class="fl-item"><div class="fl-dot" style="background:#f59e0b"></div>Tier 2 Suppliers</div>
+              <div class="fl-item"><div class="fl-dot" style="background:#3b82f6"></div>Tier 1 Suppliers</div>
+              <div class="fl-item"><div class="fl-dot" style="background:#10b981"></div>Manufacturer</div>
+              <div class="fl-item"><div class="fl-dot" style="background:#8b5cf6"></div>Distribution</div>
+              <div class="fl-item"><div class="fl-dot" style="background:#94a3b8"></div>Customer</div>
+              <div class="fl-item" style="margin-left:auto"><span style="color:var(--gold)">▶ product flow →</span></div>
+            </div>
+          </div>
+
+          <div class="def-card reveal">
+            <div class="dc-label">Stock & Lambert Definition</div>
+            <div class="dc-text">A supply chain is <strong>a system of organizations, people, activities, information, and resources</strong> involved in moving a product or service from supplier to customer. It encompasses every step from <strong>raw material extraction</strong> to <strong>final delivery</strong> — and everything in between.</div>
+          </div>
+
+          <div class="def-card reveal" style="border-left-color:var(--blue)">
+            <div class="dc-label" style="color:var(--blue2)">The Three Flows — Always Running Simultaneously</div>
+            <div class="dc-text">
+              <strong style="color:#f59e0b">Product flow →</strong> Physical goods moving downstream, from suppliers toward customers.<br/>
+              <strong style="color:#3b82f6">Information flow ↔</strong> Orders, forecasts, shipment data, demand signals — moving in both directions.<br/>
+              <strong style="color:#10b981">Financial flow ←</strong> Payments, invoices, credit terms — moving upstream toward suppliers.
+            </div>
+          </div>
+
+          <div class="def-card reveal" style="border-left-color:var(--purple)">
+            <div class="dc-label" style="color:var(--purple)">Why It Matters</div>
+            <div class="dc-text">Supply chain costs account for <strong>50–70% of revenue</strong> in most manufacturing industries. A company that manages its supply chain well can offer <strong>lower prices</strong>, <strong>faster delivery</strong>, and <strong>higher reliability</strong> than a competitor with the same product — and that is a permanent competitive advantage.</div>
+          </div>
+
+          <div class="nav-row">
+            <button class="btn-nav" onclick="goSec('hero')">← Introduction</button>
+            <button class="btn-nav primary" onclick="goSec('perspectives')">Perspectives & Definitions →</button>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- ═══ ANIMATED EXPLAINER VIDEO ═══ -->
+      <div class="sec" id="sec-video">
+        <div class="sc-wrap">
+          <div class="sc-tag reveal">Chapter 1 · Animated Explainer</div>
+          <div class="sc-title reveal">How a Supply Chain Actually Works</div>
+          <div class="sc-lead reveal">Watch this animated walkthrough of a real supply chain — from raw materials to your front door. Use the controls below to play, pause, and step through each scene.</div>
+
+          <div class="reveal" style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:1.5rem">
+            <!-- video canvas -->
+            <div style="position:relative;background:var(--bg);border-bottom:1px solid var(--border)">
+              <canvas id="vid-canvas" height="340" style="display:block;width:100%"></canvas>
+              <div id="vid-overlay" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(7,9,14,.7);cursor:pointer;transition:opacity .3s" onclick="vidPlay()">
+                <div style="width:64px;height:64px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:1.4rem">▶</div>
+              </div>
+            </div>
+            <!-- scene title bar -->
+            <div style="padding:.7rem 1.2rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:1rem">
+              <div>
+                <div id="vid-scene-label" style="font-size:.68rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gold)">Scene 1 of 6</div>
+                <div id="vid-scene-title" style="font-family:var(--font-h);font-size:.95rem;font-weight:700;margin-top:.1rem">Raw Materials — Where It All Begins</div>
+              </div>
+              <div style="font-size:.72rem;color:var(--gray2)" id="vid-time">0:00 / 0:36</div>
+            </div>
+            <!-- narration -->
+            <div id="vid-narration" style="padding:.9rem 1.2rem;font-size:.85rem;color:var(--gray3);line-height:1.7;min-height:64px;border-bottom:1px solid var(--border)">Press play to begin the animated walkthrough.</div>
+            <!-- progress bar -->
+            <div style="height:3px;background:var(--bg4)"><div id="vid-prog" style="height:3px;background:var(--gold);width:0%;transition:width .2s"></div></div>
+            <!-- controls -->
+            <div style="padding:.7rem 1.2rem;display:flex;align-items:center;gap:.7rem">
+              <button id="vid-play-btn" onclick="vidPlay()" style="background:var(--gold);color:var(--bg);font-family:var(--font-h);font-weight:700;font-size:.8rem;border:none;border-radius:7px;padding:.45rem 1.1rem;cursor:pointer;min-width:70px">▶ Play</button>
+              <button onclick="vidRestart()" style="background:var(--bg3);color:var(--gray3);font-family:var(--font-h);font-size:.78rem;border:1px solid var(--border);border-radius:7px;padding:.45rem .9rem;cursor:pointer">↺ Restart</button>
+              <button onclick="vidPrevScene()" style="background:var(--bg3);color:var(--gray3);font-family:var(--font-h);font-size:.78rem;border:1px solid var(--border);border-radius:7px;padding:.45rem .9rem;cursor:pointer">‹ Prev</button>
+              <button onclick="vidNextScene()" style="background:var(--bg3);color:var(--gray3);font-family:var(--font-h);font-size:.78rem;border:1px solid var(--border);border-radius:7px;padding:.45rem .9rem;cursor:pointer">Next ›</button>
+              <!-- scene dots -->
+              <div style="margin-left:auto;display:flex;gap:.4rem" id="vid-dots"></div>
+            </div>
+          </div>
+
+          <!-- scene list -->
+          <div class="def-card reveal" style="border-left-color:var(--blue)">
+            <div class="dc-label" style="color:var(--blue2)">What This Explainer Covers — 6 Scenes</div>
+            <div class="dc-text" style="display:grid;grid-template-columns:1fr 1fr;gap:.4rem .8rem;margin-top:.4rem">
+              <span><strong style="color:var(--white)">Scene 1</strong> — Raw materials & Tier 2 suppliers</span>
+              <span><strong style="color:var(--white)">Scene 2</strong> — Tier 1 suppliers & component production</span>
+              <span><strong style="color:var(--white)">Scene 3</strong> — The manufacturer as central node</span>
+              <span><strong style="color:var(--white)">Scene 4</strong> — Distribution centers & logistics</span>
+              <span><strong style="color:var(--white)">Scene 5</strong> — Information & financial flows</span>
+              <span><strong style="color:var(--white)">Scene 6</strong> — The complete integrated network</span>
+            </div>
+          </div>
+
+          <div class="nav-row">
+            <button class="btn-nav" onclick="goSec('what')">← What Is a Supply Chain?</button>
+            <button class="btn-nav primary" onclick="goSec('perspectives')">Perspectives →</button>
+          </div>
+        </div>
+      </div>
+      <!-- ═══ PERSPECTIVES ═══ -->
+      <div class="sec" id="sec-perspectives">
+        <div class="sc-wrap">
+          <div class="sc-tag reveal">Chapter 1 · Perspectives</div>
+          <div class="sc-title reveal">How Different People See the Supply Chain</div>
+          <div class="sc-lead reveal">Supply chain management means something different depending on where you sit in an organization. Click each perspective to see how the same supply chain looks through different eyes.</div>
+
+          <div class="persp-grid reveal">
+            <div class="pc" onclick="this.classList.toggle('active')">
+              <div class="pc-icon">🏭</div>
+              <div class="pc-title">Operations View</div>
+              <div class="pc-short">How do we produce efficiently and meet demand?</div>
+              <div class="pc-detail">Operations managers see the supply chain as a production system. Their focus: minimize waste, reduce cycle time, maintain quality, and keep lines running. They worry about capacity, scheduling, and throughput — the internal efficiency of the factory or facility.</div>
+            </div>
+            <div class="pc" onclick="this.classList.toggle('active')">
+              <div class="pc-icon">💰</div>
+              <div class="pc-title">Financial View</div>
+              <div class="pc-short">How do we reduce working capital and improve cash flow?</div>
+              <div class="pc-detail">CFOs and finance teams see the supply chain as a balance sheet. Inventory is cash tied up in product. Accounts payable terms affect liquidity. Long lead times increase risk. They push for lower inventory, faster turns, and supply chain financing programs that extend payment terms without harming suppliers.</div>
+            </div>
+            <div class="pc" onclick="this.classList.toggle('active')">
+              <div class="pc-icon">📦</div>
+              <div class="pc-title">Logistics View</div>
+              <div class="pc-short">How do we move product efficiently from A to B?</div>
+              <div class="pc-detail">Logistics professionals see the supply chain as a transportation and warehousing network. Their focus: carrier selection, routing, freight costs, warehouse layout, and on-time delivery. They are the operational backbone — without them, product does not physically reach customers.</div>
+            </div>
+            <div class="pc" onclick="this.classList.toggle('active')">
+              <div class="pc-icon">🤝</div>
+              <div class="pc-title">Procurement View</div>
+              <div class="pc-short">How do we source the right inputs at the right cost?</div>
+              <div class="pc-detail">Procurement managers see the supply chain as a supplier portfolio. Their focus: supplier qualification, contract terms, price negotiation, supplier risk, and sourcing strategy. Should we single-source or multi-source? Domestic or global? Build or buy? These decisions shape the structure of the entire upstream network.</div>
+            </div>
+            <div class="pc" onclick="this.classList.toggle('active')">
+              <div class="pc-icon">👤</div>
+              <div class="pc-title">Customer View</div>
+              <div class="pc-short">Did I get what I ordered, when I needed it, in good condition?</div>
+              <div class="pc-detail">Customers do not see the supply chain — they see its outcome. They measure service level (did it arrive on time?), order accuracy (was it correct?), and product quality (was it undamaged?). The entire purpose of supply chain management is to deliver a result the customer values.</div>
+            </div>
+            <div class="pc" onclick="this.classList.toggle('active')">
+              <div class="pc-icon">🌐</div>
+              <div class="pc-title">Strategic View</div>
+              <div class="pc-short">How does our supply chain create competitive advantage?</div>
+              <div class="pc-detail">Executives see the supply chain as a strategic asset. Apple's supply chain allows it to launch 100M iPhones in 6 weeks. Walmart's allows it to price below every competitor. Zara's lets it turn a runway trend into store product in 15 days. The supply chain is not just operations — it is strategy made physical.</div>
+            </div>
+          </div>
+
+          <div class="def-card reveal" style="margin-top:1.5rem">
+            <div class="dc-label">The Integration Imperative</div>
+            <div class="dc-text">Each perspective above is legitimate — and each one, if pursued in isolation, will sub-optimize the system. <strong>Operations</strong> running at full capacity without regard for demand creates excess inventory. <strong>Procurement</strong> driving the lowest cost without regard for supplier resilience creates vulnerability. Supply chain management is the discipline that <strong>integrates all of these perspectives</strong> so the whole system performs better than the sum of its parts.</div>
+          </div>
+
+          <div class="nav-row">
+            <button class="btn-nav" onclick="goSec('what')">← What Is a Supply Chain?</button>
+            <button class="btn-nav primary" onclick="goSec('history')">Historical Development →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ HISTORY ═══ -->
+      <div class="sec" id="sec-history">
+        <div class="sc-wrap">
+          <div class="sc-tag reveal">Chapter 1 · History</div>
+          <div class="sc-title reveal">How Supply Chain Management Evolved</div>
+          <div class="sc-lead reveal">Supply chain management did not appear overnight. It developed over 80 years as companies faced new pressures — war, globalization, technology, and crises — and responded with new ideas. The timeline below shows the turning points that define the field you are studying.</div>
+          <div class="timeline" id="timeline">
+            <div class="tl-item"><div class="tl-dot"></div><div class="tl-year">1940s</div><div class="tl-event">Wartime Logistics</div><div class="tl-detail">World War II forced the US military to coordinate the movement of millions of tons of equipment, food, and fuel across two oceans. This was the first time logistics was treated as a strategic discipline rather than a necessary burden.</div></div>
+            <div class="tl-item"><div class="tl-dot" style="border-color:var(--blue)"></div><div class="tl-year">1950s–60s</div><div class="tl-event">Physical Distribution Management</div><div class="tl-detail">Companies begin managing transportation, warehousing, and inventory as a connected system rather than separate cost centers. The term "physical distribution" enters the business lexicon.</div></div>
+            <div class="tl-item"><div class="tl-dot" style="border-color:var(--blue)"></div><div class="tl-year">1970s</div><div class="tl-event">Materials Management & Just-in-Time</div><div class="tl-detail">Toyota develops the Just-in-Time production system — delivering parts exactly when needed, eliminating buffer inventory. This forces manufacturers to think about supplier coordination as a core competency, not an afterthought.</div></div>
+            <div class="tl-item"><div class="tl-dot" style="border-color:var(--green)"></div><div class="tl-year">1982</div><div class="tl-event">The Term "Supply Chain Management" Is Born</div><div class="tl-detail">Keith Oliver at Booz Allen Hamilton coins the phrase "supply chain management" in an interview with the Financial Times — formalizing the idea that upstream suppliers and downstream customers should be managed as a single integrated system.</div></div>
+            <div class="tl-item"><div class="tl-dot" style="border-color:var(--green)"></div><div class="tl-year">1990s</div><div class="tl-event">Globalization & ERP Systems</div><div class="tl-detail">Companies offshore manufacturing to Asia, creating complex global networks. SAP, Oracle, and other ERP systems emerge to manage information across these networks. The supply chain becomes global — and exponentially more complex.</div></div>
+            <div class="tl-item"><div class="tl-dot" style="border-color:var(--amber)"></div><div class="tl-year">2000s</div><div class="tl-event">E-Commerce Transforms Fulfillment</div><div class="tl-detail">Amazon demonstrates that customers will pay for speed and convenience. The rise of e-commerce forces every retailer to redesign their supply chain around direct-to-consumer fulfillment — a fundamental shift in distribution strategy.</div></div>
+            <div class="tl-item"><div class="tl-dot" style="border-color:var(--amber)"></div><div class="tl-year">2011</div><div class="tl-event">Japan Earthquake — Resilience Becomes Priority</div><div class="tl-detail">A single earthquake and tsunami exposes how vulnerable hyper-efficient global supply chains are to disruption. Toyota, Nissan, and hundreds of others lose months of production. The industry begins investing seriously in supply chain risk management.</div></div>
+            <div class="tl-item"><div class="tl-dot" style="border-color:var(--red)"></div><div class="tl-year">2020–21</div><div class="tl-event">COVID-19 — The Supply Chain Enters Public Consciousness</div><div class="tl-detail">For the first time, consumers experience supply chain disruption personally — empty shelves, semiconductor shortages, 18-month appliance wait times. The pandemic reveals the fragility of just-in-time systems and triggers a global rethink of supply chain strategy.</div></div>
+            <div class="tl-item"><div class="tl-dot" style="border-color:var(--purple)"></div><div class="tl-year">Today</div><div class="tl-event">Resilience, Sustainability & Digital Transformation</div><div class="tl-detail">Modern supply chain management focuses on three simultaneous imperatives: building resilient networks that can absorb shocks, reducing environmental impact, and deploying digital tools — sensors, analytics, and automation — to create visibility and agility across complex global networks.</div></div>
+          </div>
+          <div class="nav-row">
+            <button class="btn-nav" onclick="goSec('perspectives')">← Perspectives</button>
+            <button class="btn-nav primary" onclick="goSec('societal')">Societal Impact →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ SOCIETAL IMPACT ═══ -->
+      <div class="sec" id="sec-societal">
+        <div class="sc-wrap">
+          <div class="sc-tag reveal">Chapter 1 · Societal Issues</div>
+          <div class="sc-title reveal">Supply Chains Shape Society</div>
+          <div class="sc-lead reveal">Supply chains are not just business systems — they are the infrastructure of modern life. When they work, they raise living standards, create jobs, and deliver medicines. When they fail, the consequences are visible at every grocery shelf and gas pump.</div>
+
+          <div class="impact-grid reveal">
+            <div class="ic"><div class="ic-num" style="color:var(--gold)">$22T</div><div class="ic-title">Annual global logistics spend</div><div class="ic-desc">More than the GDP of the United States. Supply chain activity is one of the largest sectors of the global economy.</div></div>
+            <div class="ic"><div class="ic-num" style="color:var(--blue2)">37M</div><div class="ic-title">US supply chain jobs</div><div class="ic-desc">From truck drivers to data analysts to procurement managers — supply chain supports one in five American jobs.</div></div>
+            <div class="ic"><div class="ic-num" style="color:var(--green2)">95%</div><div class="ic-title">Of products you buy</div><div class="ic-desc">Nearly everything in your home, office, and phone traveled through at least 3 countries and 10 organizations before reaching you.</div></div>
+            <div class="ic"><div class="ic-num" style="color:var(--red)">$4T</div><div class="ic-title">COVID supply chain loss</div><div class="ic-desc">Estimated global economic cost of supply chain disruptions from 2020–2022 — the largest supply chain failure in modern history.</div></div>
+          </div>
+
+          <div class="sc-title reveal" style="font-size:1.3rem;margin-top:1.8rem">Key Societal Issues</div>
+          <div class="issues-grid reveal">
+            <div class="issue-card"><div class="issue-icon">👷</div><div class="issue-body"><div class="ib-title">Labor Standards</div><div class="ib-desc">Global supply chains often source from countries with weaker labor protections. Companies face pressure — and legal obligations — to audit their suppliers for forced labor, unsafe conditions, and child labor.</div></div></div>
+            <div class="issue-card"><div class="issue-icon">🌱</div><div class="issue-body"><div class="ib-title">Environmental Sustainability</div><div class="ib-desc">Freight transportation accounts for 8% of global CO₂ emissions. Companies are under growing pressure to measure and reduce the carbon footprint of their supply chains — from packaging to last-mile delivery.</div></div></div>
+            <div class="issue-card"><div class="issue-icon">🍎</div><div class="issue-body"><div class="ib-title">Food Security</div><div class="ib-desc">Modern food supply chains feed 8 billion people. Disruptions — drought, disease, logistics failure — can cause food shortages and price spikes that fall hardest on the poorest populations.</div></div></div>
+            <div class="issue-card"><div class="issue-icon">💊</div><div class="issue-body"><div class="ib-title">Pharmaceutical Access</div><div class="ib-desc">Cold chain failures in developing countries destroy 25% of vaccines before they reach patients. Supply chain design directly determines whether life-saving medicines reach the people who need them.</div></div></div>
+            <div class="issue-card"><div class="issue-icon">🏘️</div><div class="issue-body"><div class="ib-title">Economic Development</div><div class="ib-desc">Integration into global supply chains is the primary path by which developing countries generate export income, create manufacturing jobs, and build economic capacity.</div></div></div>
+            <div class="issue-card"><div class="issue-icon">🛡️</div><div class="issue-body"><div class="ib-title">National Security</div><div class="ib-desc">Governments now treat supply chains as a national security issue. Dependence on foreign suppliers for semiconductors, pharmaceuticals, and rare earth minerals is a vulnerability that policy is increasingly designed to address.</div></div></div>
+          </div>
+          <div class="nav-row">
+            <button class="btn-nav" onclick="goSec('history')">← Historical Development</button>
+            <button class="btn-nav primary" onclick="goSec('model')">The SCM Model →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ MODEL ═══ -->
+      <div class="sec" id="sec-model">
+        <div class="sc-wrap">
+          <div class="sc-tag reveal">Chapter 1 · The Framework</div>
+          <div class="sc-title reveal">The Stock & Lambert SCM Model</div>
+          <div class="sc-lead reveal">Stock & Lambert argue that supply chain management rests on three interdependent pillars. Understanding all three — and how they interact — is the foundation of the course. Click each pillar to expand.</div>
+
+          <div class="pillars reveal">
+            <div class="pil" onclick="this.classList.toggle('open')">
+              <div class="p-bg" style="background:radial-gradient(circle at 50% 0%, rgba(201,168,76,.08), transparent 70%)"></div>
+              <div class="p-num" style="color:var(--gold)">01</div>
+              <div class="p-title">Supply Chain Network Structure</div>
+              <div class="p-desc">Who are the members and how are they connected?</div>
+              <div class="pil-detail">The network structure defines which companies are part of your supply chain and how they relate to each other. This includes decisions about <strong>how many tiers</strong> your network has, <strong>which suppliers</strong> you work with directly versus through intermediaries, and <strong>how many facilities</strong> you need. Network structure decisions are long-term and expensive to change — getting them right is a strategic imperative.</div>
+            </div>
+            <div class="pil" onclick="this.classList.toggle('open')">
+              <div class="p-bg" style="background:radial-gradient(circle at 50% 0%, rgba(59,130,246,.08), transparent 70%)"></div>
+              <div class="p-num" style="color:var(--blue2)">02</div>
+              <div class="p-title">Business Processes</div>
+              <div class="p-desc">What activities create value for customers?</div>
+              <div class="pil-detail">Business processes are the activities that actually create value: customer relationship management, demand management, order fulfillment, manufacturing flow, supplier relationship management, product development, and returns management. Stock & Lambert identify <strong>8 core supply chain processes</strong>. Managing them requires coordination across companies — which is what makes SCM difficult.</div>
+            </div>
+            <div class="pil" onclick="this.classList.toggle('open')">
+              <div class="p-bg" style="background:radial-gradient(circle at 50% 0%, rgba(16,185,129,.08), transparent 70%)"></div>
+              <div class="p-num" style="color:var(--green2)">03</div>
+              <div class="p-title">Management Components</div>
+              <div class="p-desc">What tools and practices govern how the network operates?</div>
+              <div class="pil-detail">Management components are the systems and practices that make integration possible: <strong>planning and control</strong> systems, <strong>work structure</strong>, <strong>organizational structure</strong>, <strong>product flow</strong> management, <strong>information flow</strong> management, <strong>management methods</strong>, power and leadership structures, and culture. These components are what separate companies that talk about integration from those that actually achieve it.</div>
+            </div>
+          </div>
+
+          <div class="def-card reveal" style="border-left-color:var(--green);margin-top:1.5rem">
+            <div class="dc-label" style="color:var(--green2)">Why Integration Is Hard</div>
+            <div class="dc-text">Every company in a supply chain has its own goals, metrics, and incentives. A supplier wants high prices and long contracts. A manufacturer wants low prices and flexibility. A retailer wants perfect service and vendor-managed inventory. <strong>Integration does not happen automatically</strong> — it requires deliberate design, shared information, aligned incentives, and trust built over time. That is why supply chain management is a strategic discipline, not just a set of operational tools.</div>
+          </div>
+
+          <div class="def-card reveal" style="border-left-color:var(--amber)">
+            <div class="dc-label" style="color:var(--amber)">The Bullwhip Effect — Why Integration Failures Are Costly</div>
+            <div class="dc-text">When companies do not share information, demand signals distort as they move upstream. A retailer sees a <strong>5% demand increase</strong> and orders 15% more. The distributor sees that 15% and orders 30% more. The manufacturer sees 30% and increases production 60%. This amplification — called the bullwhip effect — wastes billions annually in excess inventory, overtime, and markdowns. <strong>Information sharing eliminates it.</strong></div>
+          </div>
+
+          <div class="nav-row">
+            <button class="btn-nav" onclick="goSec('societal')">← Societal Impact</button>
+            <button class="btn-nav primary" onclick="goSec('quiz')">Check Your Understanding →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ QUIZ ═══ -->
+      <div class="sec" id="sec-quiz">
+        <div class="sc-wrap">
+          <div class="sc-tag reveal">Chapter 1 · Assessment</div>
+          <div class="sc-title reveal">Check Your Understanding</div>
+          <div class="sc-lead reveal">Five questions based on Chapter 1. Answer each one — you will get immediate feedback and an explanation.</div>
+          <div id="quiz-area"></div>
+          <div id="quiz-complete" style="display:none">
+            <div class="def-card" style="border-left-color:var(--green);text-align:center;padding:2rem">
+              <div style="font-size:2rem;margin-bottom:.6rem">✓</div>
+              <div class="dc-label" style="color:var(--green2);text-align:center">Chapter 1 Complete</div>
+              <div class="dc-text" style="text-align:center;margin-top:.4rem">Score: <strong id="quiz-score" style="color:var(--white)">0/5</strong>. Your responses have been saved.</div>
+            </div>
+          </div>
+          <div class="nav-row">
+            <button class="btn-nav" onclick="goSec('model')">← The SCM Model</button>
+            <button class="btn-nav primary" id="btn-to-ch2" style="opacity:.4;cursor:not-allowed" disabled>Chapter 2 →</button>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /content-area -->
+  </div><!-- /main-layout -->
+</div><!-- /shell -->
+
+<div class="notif" id="notif"><div class="nt" id="nt-t"></div><div class="nb" id="nt-b"></div></div>
+<script>
+// ══════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════
+let ST={name:'',id:'',visited:new Set(['hero']),quizAnswers:{},quizScore:0};
+const SEC_ORDER=['hero','what','video','perspectives','history','societal','model','quiz'];
+
+// ══════════════════════════════════════════════
+// LOGIN
+// ══════════════════════════════════════════════
+function initials(n){return n.trim().split(' ').map(w=>w[0]||'').join('').toUpperCase().slice(0,2)||'?'}
+function avColor(n){const c=['#c9a84c','#3b82f6','#10b981','#ef4444','#8b5cf6','#f97316'];let h=0;for(let i=0;i<n.length;i++)h=(Math.imul(31,h)+n.charCodeAt(i))|0;return c[Math.abs(h)%c.length]}
+
+function doLogin(){
+  const name=document.getElementById('inp-name').value.trim();
+  const id=document.getElementById('inp-id').value.trim();
+  if(!name||!id){notify('Missing info','Enter your full name and student ID.','warn');return}
+  ST.name=name;ST.id=id;
+  document.getElementById('hdr-av').textContent=initials(name);
+  document.getElementById('hdr-av').style.background=avColor(name);
+  document.getElementById('hdr-nm').textContent=name;
+  document.getElementById('login-overlay').style.display='none';
+  loadSaved();
+  setTimeout(()=>{initFlowCanvas();initTimeline();},100);
+  notify('Welcome','Chapter 1 is ready. Start with the Introduction.');
+}
+
+// ══════════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════════
+function goSec(id){
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(b=>b.classList.remove('active'));
+  document.getElementById('sec-'+id).classList.add('active');
+  document.getElementById('sb-'+id).classList.add('active');
+  document.getElementById('content-area').scrollTop=0;
+  ST.visited.add(id);
+  updateProgress();
+  setTimeout(()=>{revealElements();if(id==='what')initFlowCanvas();if(id==='history')animateTimeline();if(id==='video')vidInitCanvas();},80);
+  if(id==='quiz'){qIdx=0;ST.quizScore=0;shuffleQuestions();buildQuiz();}
+  saveState();
+}
+
+function updateProgress(){
+  const pct=Math.round((ST.visited.size/SEC_ORDER.length)*100);
+  document.getElementById('prog-pct').textContent=pct+'%';
+  document.getElementById('prog-fill').style.width=pct+'%';
+}
+
+// ══════════════════════════════════════════════
+// SCROLL REVEAL
+// ══════════════════════════════════════════════
+function revealElements(){
+  document.querySelectorAll('.reveal').forEach((el,i)=>{
+    setTimeout(()=>{el.classList.add('visible')},i*80);
+  });
+}
+
+// ══════════════════════════════════════════════
+// ANIMATED FLOW CANVAS
+// ══════════════════════════════════════════════
+let flowAnim=null;
+const FLOW_NODES=[
+  {id:'steel',label:'Steel Mill',sub:'Raw material',col:'#f59e0b',x:.06,y:.3},
+  {id:'plastic',label:'Resin Plant',sub:'Raw material',col:'#f59e0b',x:.06,y:.7},
+  {id:'parts',label:'Parts Maker',sub:'T1 Supplier',col:'#3b82f6',x:.28,y:.25},
+  {id:'elec',label:'Electronics',sub:'T1 Supplier',col:'#3b82f6',x:.28,y:.75},
+  {id:'mfg',label:'Toyota',sub:'Manufacturer',col:'#10b981',x:.50,y:.5},
+  {id:'dc1',label:'US DC',sub:'Distribution',col:'#8b5cf6',x:.70,y:.3},
+  {id:'dc2',label:'EU DC',sub:'Distribution',col:'#8b5cf6',x:.70,y:.7},
+  {id:'dealer1',label:'Dealers',sub:'Customer',col:'#94a3b8',x:.89,y:.22},
+  {id:'dealer2',label:'Fleet',sub:'Customer',col:'#94a3b8',x:.89,y:.5},
+  {id:'dealer3',label:'Export',sub:'Customer',col:'#94a3b8',x:.89,y:.78},
+];
+const FLOW_EDGES=[
+  ['steel','parts'],['plastic','elec'],['parts','mfg'],['elec','mfg'],
+  ['mfg','dc1'],['mfg','dc2'],['dc1','dealer1'],['dc1','dealer2'],['dc2','dealer3']
+];
+let particles=[];
+let lastPTime=0;
+
+function initFlowCanvas(){
+  const c=document.getElementById('flow-canvas');
+  if(!c)return;
+  c.width=c.parentElement.clientWidth||680;
+  c.height=200;
+  if(flowAnim)cancelAnimationFrame(flowAnim);
+  particles=[];
+  animateFlow();
+}
+
+function animateFlow(){
+  const c=document.getElementById('flow-canvas');
+  if(!c||!document.getElementById('sec-what').classList.contains('active')){flowAnim=null;return}
+  const ctx=c.getContext('2d');
+  const W=c.width,H=c.height;
+  ctx.clearRect(0,0,W,H);
+
+  // spawn particles
+  const now=Date.now();
+  if(now-lastPTime>600){
+    lastPTime=now;
+    FLOW_EDGES.forEach(([a,b])=>{
+      if(Math.random()<.6){
+        const na=FLOW_NODES.find(n=>n.id===a);
+        const nb=FLOW_NODES.find(n=>n.id===b);
+        if(na&&nb)particles.push({ax:na.x,ay:na.y,bx:nb.x,by:nb.y,t:0,speed:.008+Math.random()*.006,col:na.col});
+      }
+    });
+  }
+
+  // draw edges
+  FLOW_EDGES.forEach(([a,b])=>{
+    const na=FLOW_NODES.find(n=>n.id===a);
+    const nb=FLOW_NODES.find(n=>n.id===b);
+    if(!na||!nb)return;
+    ctx.beginPath();
+    ctx.moveTo(na.x*W,na.y*H);ctx.lineTo(nb.x*W,nb.y*H);
+    ctx.strokeStyle='rgba(255,255,255,.07)';ctx.lineWidth=1;ctx.stroke();
+  });
+
+  // draw nodes
+  FLOW_NODES.forEach(n=>{
+    const r=n.id==='mfg'?22:n.id.startsWith('dc')?16:12;
+    const x=n.x*W,y=n.y*H;
+    ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);
+    ctx.fillStyle=n.col+'20';ctx.fill();
+    ctx.strokeStyle=n.col;ctx.lineWidth=1.5;ctx.stroke();
+    ctx.fillStyle='rgba(238,242,247,.85)';
+    ctx.font=`500 ${n.id==='mfg'?11:9}px Inter,sans-serif`;
+    ctx.textAlign='center';ctx.textBaseline='top';
+    ctx.fillText(n.label,x,y+r+3);
+  });
+
+  // move & draw particles
+  particles=particles.filter(p=>p.t<=1);
+  particles.forEach(p=>{
+    p.t+=p.speed;
+    const x=p.ax*W+(p.bx-p.ax)*W*p.t;
+    const y=p.ay*H+(p.by-p.ay)*H*p.t;
+    ctx.beginPath();ctx.arc(x,y,3.5,0,Math.PI*2);
+    ctx.fillStyle=p.col;ctx.fill();
+    ctx.beginPath();ctx.arc(x,y,6,0,Math.PI*2);
+    ctx.fillStyle=p.col+'40';ctx.fill();
+  });
+
+  flowAnim=requestAnimationFrame(animateFlow);
+}
+
+// ══════════════════════════════════════════════
+// TIMELINE ANIMATION
+// ══════════════════════════════════════════════
+function initTimeline(){
+  const items=document.querySelectorAll('.tl-item');
+  items.forEach((item,i)=>{setTimeout(()=>item.classList.add('visible'),i*120)});
+}
+function animateTimeline(){
+  const items=document.querySelectorAll('.tl-item');
+  items.forEach(i=>i.classList.remove('visible'));
+  setTimeout(()=>{items.forEach((item,i)=>{setTimeout(()=>item.classList.add('visible'),i*100)})},50);
+}
+
+// ══════════════════════════════════════════════
+// QUIZ
+// ══════════════════════════════════════════════
+// Master question bank — more questions than shown, randomly sampled each attempt
+const QUESTION_BANK=[
+  {q:"Stock & Lambert define a supply chain as a system involving which of the following?",opts:["Only the manufacturer and its direct customers","Organizations, people, activities, information, and resources that move a product from supplier to customer","Just the transportation and warehousing companies that move physical goods","The financial institutions that fund production and distribution"],correct:1,explain:"The Stock & Lambert definition is deliberately broad — it includes every organization, person, activity, information exchange, and resource involved in creating and delivering a product. You cannot manage the supply chain if you only see part of it."},
+  {q:"Which of the three supply chain flows moves primarily in an UPSTREAM direction?",opts:["Product flow","Information flow","Financial flow","Demand flow"],correct:2,explain:"Financial flow — payments, invoices, credit terms — moves upstream from customers toward suppliers. Product flows downstream. Information flows in both directions."},
+  {q:"The term 'supply chain management' was formally coined in what year?",opts:["1970","1982","1995","2001"],correct:1,explain:"Keith Oliver at Booz Allen Hamilton coined the phrase in a 1982 Financial Times interview — formalizing the idea that suppliers, manufacturers, and distributors should be managed as a single integrated system."},
+  {q:"The bullwhip effect refers to which supply chain phenomenon?",opts:["The tendency for freight costs to increase during peak seasons","The amplification of small demand changes into large order swings as you move upstream","The impact of weather disruptions on transportation networks","The oscillation in service levels caused by warehouse stockouts"],correct:1,explain:"The bullwhip effect occurs when each tier adds a safety buffer to the order it receives — causing small retail fluctuations to amplify into huge swings upstream. Sharing real demand data eliminates it."},
+  {q:"According to the Stock & Lambert model, which pillar addresses 'who the supply chain members are and how they connect'?",opts:["Business Processes","Management Components","Supply Chain Network Structure","Integration Framework"],correct:2,explain:"Supply Chain Network Structure is the first pillar. It defines which companies are in the supply chain, how many tiers it has, and how members connect upstream to downstream."},
+  {q:"Which supply chain flow travels in BOTH directions simultaneously?",opts:["Product flow","Information flow","Financial flow","Inventory flow"],correct:1,explain:"Information flow is bidirectional — orders and forecasts travel upstream while shipment confirmations and demand data travel downstream. This is what makes information sharing so powerful: it synchronizes the whole network."},
+  {q:"Supply chain costs typically represent what percentage of revenue in manufacturing industries?",opts:["10–20%","30–40%","50–70%","80–90%"],correct:2,explain:"Supply chain costs — procurement, production, logistics, inventory — typically account for 50–70% of revenue in manufacturing. This is why supply chain efficiency is a direct driver of competitive advantage and profitability."},
+  {q:"What was the primary supply chain lesson from the COVID-19 pandemic?",opts:["Just-in-time manufacturing is always superior to buffer stock strategies","Global supply chains are highly vulnerable when resilience is sacrificed for efficiency","Domestic sourcing is always preferable to global sourcing","Demand forecasting is impossible during crises"],correct:1,explain:"COVID-19 exposed the fragility of hyper-efficient just-in-time supply chains. When multiple nodes failed simultaneously, companies with no buffer inventory or alternative suppliers had no options. Resilience — the ability to absorb disruption — became a top strategic priority."},
+  {q:"What is the primary cause of the bullwhip effect according to supply chain theory?",opts:["Poor warehouse management","Lack of information sharing between supply chain tiers","Excessive transportation costs","Unreliable manufacturing equipment"],correct:1,explain:"The bullwhip effect is caused by each tier making independent ordering decisions without real demand data. When each party adds its own safety buffer based on orders received rather than true end demand, the distortion compounds at every step upstream."},
+  {q:"Which perspective views the supply chain primarily as a balance sheet and cash flow problem?",opts:["Operations view","Logistics view","Financial view","Procurement view"],correct:2,explain:"Finance teams see inventory as working capital tied up in product, lead times as cash flow risk, and supply chain design as a balance sheet decision. They focus on inventory turns, days payable outstanding, and return on invested capital."},
+];
+
+function shuffleQuestions(){
+  // Fisher-Yates shuffle then take first 5
+  const bank=[...QUESTION_BANK];
+  for(let i=bank.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[bank[i],bank[j]]=[bank[j],bank[i]];}
+  QUESTIONS.length=0;
+  bank.slice(0,5).forEach(q=>QUESTIONS.push(q));
+}
+
+const QUESTIONS=[...QUESTION_BANK.slice(0,5)]; // initial load
+
+  {q:"Stock & Lambert define a supply chain as a system involving which of the following?",opts:["Only the manufacturer and its direct customers","Organizations, people, activities, information, and resources that move a product from supplier to customer","Just the transportation and warehousing companies that move physical goods","The financial institutions that fund production and distribution"],correct:1,explain:"The Stock & Lambert definition is deliberately broad — it includes every organization, person, activity, information exchange, and resource involved in creating and delivering a product. This breadth is intentional: you cannot manage the supply chain if you only see part of it."},
+  {q:"Which of the three supply chain flows moves primarily in an UPSTREAM direction?",opts:["Product flow","Information flow","Financial flow","Demand flow"],correct:2,explain:"Financial flow — payments, invoices, credit terms — moves upstream from customers toward suppliers. Product flows downstream. Information flows in both directions. Understanding the direction of each flow is essential for designing supply chain processes."},
+  {q:"The term 'supply chain management' was formally coined in what year?",opts:["1970","1982","1995","2001"],correct:1,explain:"Keith Oliver at Booz Allen Hamilton coined the phrase 'supply chain management' in a 1982 Financial Times interview — formalizing the idea that suppliers, manufacturers, and distributors should be managed as a single integrated system, not as separate entities."},
+  {q:"The bullwhip effect refers to which supply chain phenomenon?",opts:["The tendency for freight costs to increase during peak seasons","The amplification of small demand changes into large order swings as you move upstream","The impact of weather disruptions on transportation networks","The oscillation in service levels caused by warehouse stockouts"],correct:1,explain:"The bullwhip effect occurs when each tier in the supply chain adds a safety buffer to the order it receives — causing small retail demand fluctuations to amplify into huge order swings at the manufacturer level. It is caused by lack of information sharing and can be eliminated by sharing real demand data across the supply chain."},
+  {q:"According to the Stock & Lambert model, which pillar addresses 'who the supply chain members are and how they connect'?",opts:["Business Processes","Management Components","Supply Chain Network Structure","Integration Framework"],correct:2,explain:"Supply Chain Network Structure is the first pillar of the Stock & Lambert model. It defines which companies are part of the supply chain, how many tiers it has, and how members are connected — upstream to downstream. This is the foundation on which processes and management components are built."},
+];
+let qIdx=0;
+
+function buildQuiz(){
+  const area=document.getElementById('quiz-area');
+  if(qIdx===0){ST.quizScore=0;} // always reset score at start of new attempt
+  if(qIdx>=QUESTIONS.length){
+    area.innerHTML='';
+    document.getElementById('quiz-complete').style.display='block';
+    document.getElementById('quiz-score').textContent=ST.quizScore+'/'+QUESTIONS.length;
+    const b2=document.getElementById('btn-to-ch2');
+    b2.style.opacity='1';b2.style.cursor='pointer';
+    b2.disabled=false;b2.removeAttribute('disabled');
+    b2.onclick=function(){window.location.href='sc_chapter2.html';};
+    saveState();notify('Chapter 1 complete!','Score: '+ST.quizScore+'/'+QUESTIONS.length);
+    return;
+  }
+  const q=QUESTIONS[qIdx];
+  area.innerHTML=`<div class="quiz-block">
+    <div style="font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:.6rem">Question ${qIdx+1} of ${QUESTIONS.length}</div>
+    <div class="quiz-q">${q.q}</div>
+    <div class="quiz-opts">${q.opts.map((o,i)=>`<button class="qopt" onclick="answerQ(${i})" id="qopt-${i}">${String.fromCharCode(65+i)}. ${o}</button>`).join('')}</div>
+    <div class="quiz-feedback" id="qfb"></div>
+    <button class="btn-next-q" id="btn-nq" onclick="nextQ()">Next Question →</button>
+  </div>`;
+}
+
+function answerQ(i){
+  const q=QUESTIONS[qIdx];
+  document.querySelectorAll('.qopt').forEach(b=>b.style.pointerEvents='none');
+  const isCorrect=i===q.correct;
+  if(isCorrect)ST.quizScore++;
+  const fb=document.getElementById('qfb');
+  document.getElementById('qopt-'+i).classList.add(isCorrect?'correct':'wrong');
+  if(!isCorrect)document.getElementById('qopt-'+q.correct).classList.add('show-correct');
+  fb.className='quiz-feedback show '+(isCorrect?'good':'bad');
+  fb.innerHTML=(isCorrect?'<strong>Correct.</strong> ':'<strong>Not quite.</strong> ')+q.explain;
+  document.getElementById('btn-nq').classList.add('show');
+  ST.quizAnswers[qIdx]={selected:i,correct:q.correct,isCorrect};
+  saveState();
+}
+
+function nextQ(){qIdx++;buildQuiz();}
+
+// ══════════════════════════════════════════════
+// PERSISTENCE
+// ══════════════════════════════════════════════
+function saveState(){
+  try{localStorage.setItem('scm1010_ch1_'+ST.id,JSON.stringify({visited:[...ST.visited],quizAnswers:ST.quizAnswers,quizScore:ST.quizScore}))}catch(e){}
+}
+function loadSaved(){
+  try{
+    const d=localStorage.getItem('scm1010_ch1_'+ST.id);
+    if(d){const p=JSON.parse(d);ST.visited=new Set(p.visited||['hero']);ST.quizAnswers=p.quizAnswers||{};ST.quizScore=p.quizScore||0;}
+  }catch(e){}
+  updateProgress();
+}
+
+// ══════════════════════════════════════════════
+// NOTIFICATIONS
+// ══════════════════════════════════════════════
+let ntimer=null;
+function notify(title,body,type='success'){
+  const n=document.getElementById('notif');
+  document.getElementById('nt-t').textContent=title;
+  document.getElementById('nt-b').textContent=body;
+  n.className='notif '+type+' show';
+  clearTimeout(ntimer);
+  ntimer=setTimeout(()=>n.className='notif '+type,3400);
+}
+
+
+// ══════════════════════════════════════════════
+// ANIMATED EXPLAINER VIDEO ENGINE
+// ══════════════════════════════════════════════
+const VID_SCENES = [
+  {
+    id:'raw', title:'Raw Materials — Where It All Begins', duration:360,
+    narration:"Every product starts as raw material. Steel from a mine in Brazil. Cotton from a farm in India. Petroleum from a refinery in Texas. These Tier 2 suppliers are often invisible to the consumer — but without them, nothing moves. Watch the raw material nodes appear and begin flowing.",
+    nodes:[
+      {id:'mine',label:'Iron Mine',sub:'Brazil',col:'#f59e0b',x:.12,y:.2},
+      {id:'farm',label:'Cotton Farm',sub:'India',col:'#f59e0b',x:.12,y:.5},
+      {id:'refinery',label:'Oil Refinery',sub:'Texas',col:'#f59e0b',x:.12,y:.8},
+    ],
+    edges:[],
+    highlight:['mine','farm','refinery']
+  },
+  {
+    id:'t1', title:'Tier 1 Suppliers — Components Take Shape', duration:360,
+    narration:"Raw materials flow into Tier 1 suppliers — the companies that produce the components your manufacturer actually orders. A steel mill produces body panels. A chemical plant turns petroleum into plastic. A fabric mill turns cotton into textile. These are the direct suppliers you have contracts with.",
+    nodes:[
+      {id:'mine',label:'Iron Mine',sub:'Brazil',col:'#f59e0b',x:.1,y:.2},
+      {id:'farm',label:'Cotton Farm',sub:'India',col:'#f59e0b',x:.1,y:.5},
+      {id:'refinery',label:'Oil Refinery',sub:'Texas',col:'#f59e0b',x:.1,y:.8},
+      {id:'steelmill',label:'Steel Mill',sub:'T1 Supplier',col:'#3b82f6',x:.32,y:.2},
+      {id:'plastics',label:'Plastics Co.',sub:'T1 Supplier',col:'#3b82f6',x:.32,y:.5},
+      {id:'fabric',label:'Fabric Mill',sub:'T1 Supplier',col:'#3b82f6',x:.32,y:.8},
+    ],
+    edges:[['mine','steelmill'],['refinery','plastics'],['farm','fabric']],
+    highlight:['steelmill','plastics','fabric']
+  },
+  {
+    id:'mfg', title:'The Manufacturer — The Network\'s Central Node', duration:360,
+    narration:"Components converge at the manufacturer — the central node of the supply chain. Here, steel becomes a car frame. Plastic becomes a bumper. Fabric becomes a seat. The manufacturer is where all upstream flows combine into a finished product. Notice how removing this single node would freeze the entire network.",
+    nodes:[
+      {id:'steelmill',label:'Steel Mill',sub:'T1',col:'#3b82f6',x:.12,y:.2},
+      {id:'plastics',label:'Plastics Co.',sub:'T1',col:'#3b82f6',x:.12,y:.5},
+      {id:'fabric',label:'Fabric Mill',sub:'T1',col:'#3b82f6',x:.12,y:.8},
+      {id:'mfg',label:'Toyota',sub:'Manufacturer',col:'#10b981',x:.5,y:.5},
+    ],
+    edges:[['steelmill','mfg'],['plastics','mfg'],['fabric','mfg']],
+    highlight:['mfg']
+  },
+  {
+    id:'dist', title:'Distribution Centers — Bridging Production & Demand', duration:360,
+    narration:"Finished vehicles leave the factory and enter the distribution network. Regional distribution centers receive bulk shipments and break them down for local delivery. The US DC serves eastern markets. The western DC covers the Pacific region. Each DC is a critical node — if it fails, the downstream customers it serves go dark.",
+    nodes:[
+      {id:'mfg',label:'Toyota',sub:'Manufacturer',col:'#10b981',x:.12,y:.5},
+      {id:'dc_us',label:'US East DC',sub:'Memphis TN',col:'#8b5cf6',x:.38,y:.28},
+      {id:'dc_west',label:'US West DC',sub:'Los Angeles',col:'#8b5cf6',x:.38,y:.72},
+      {id:'dealer1',label:'NE Dealers',sub:'Customer',col:'#94a3b8',x:.72,y:.18},
+      {id:'dealer2',label:'SE Dealers',sub:'Customer',col:'#94a3b8',x:.72,y:.42},
+      {id:'dealer3',label:'W Dealers',sub:'Customer',col:'#94a3b8',x:.72,y:.62},
+      {id:'fleet',label:'Fleet',sub:'Customer',col:'#94a3b8',x:.72,y:.82},
+    ],
+    edges:[['mfg','dc_us'],['mfg','dc_west'],['dc_us','dealer1'],['dc_us','dealer2'],['dc_west','dealer3'],['dc_west','fleet']],
+    highlight:['dc_us','dc_west']
+  },
+  {
+    id:'flows', title:'The Three Flows — Product, Information & Money', duration:420,
+    narration:"A supply chain carries three flows simultaneously. Products move downstream — left to right. Information moves in both directions: Toyota shares production schedules with suppliers; dealers send real sales data back upstream. Money flows upstream — dealers pay DCs, DCs remit to Toyota, Toyota pays suppliers. Managing all three flows together is what supply chain management actually means.",
+    nodes:[
+      {id:'supplier',label:'Suppliers',sub:'Upstream',col:'#f59e0b',x:.12,y:.5},
+      {id:'mfg',label:'Toyota',sub:'Manufacturer',col:'#10b981',x:.45,y:.5},
+      {id:'customer',label:'Dealers',sub:'Downstream',col:'#94a3b8',x:.82,y:.5},
+    ],
+    edges:[['supplier','mfg'],['mfg','customer']],
+    highlight:['supplier','mfg','customer'],
+    showFlows: true
+  },
+  {
+    id:'complete', title:'The Complete Integrated Network', duration:400,
+    narration:"This is what an integrated supply chain looks like. Every node connected. Three flows running simultaneously. Information shared across every tier. When this system is designed well and managed with discipline, it delivers the right product to the right customer at the right time — at a cost that creates competitive advantage. This is what you are learning to manage.",
+    nodes:[
+      {id:'t2a',label:'Iron Mine',sub:'T2',col:'#f59e0b',x:.07,y:.2},
+      {id:'t2b',label:'Oil Refinery',sub:'T2',col:'#f59e0b',x:.07,y:.5},
+      {id:'t2c',label:'Cotton Farm',sub:'T2',col:'#f59e0b',x:.07,y:.8},
+      {id:'t1a',label:'Steel Mill',sub:'T1',col:'#3b82f6',x:.26,y:.28},
+      {id:'t1b',label:'Plastics',sub:'T1',col:'#3b82f6',x:.26,y:.72},
+      {id:'mfg',label:'Toyota',sub:'Manufacturer',col:'#10b981',x:.48,y:.5},
+      {id:'dca',label:'East DC',sub:'Dist.',col:'#8b5cf6',x:.68,y:.3},
+      {id:'dcb',label:'West DC',sub:'Dist.',col:'#8b5cf6',x:.68,y:.7},
+      {id:'c1',label:'Dealers',sub:'Customer',col:'#94a3b8',x:.88,y:.2},
+      {id:'c2',label:'Fleet',sub:'Customer',col:'#94a3b8',x:.88,y:.5},
+      {id:'c3',label:'Export',sub:'Customer',col:'#94a3b8',x:.88,y:.8},
+    ],
+    edges:[['t2a','t1a'],['t2b','t1b'],['t2c','t1b'],['t1a','mfg'],['t1b','mfg'],['mfg','dca'],['mfg','dcb'],['dca','c1'],['dca','c2'],['dcb','c3']],
+    highlight:['t2a','t2b','t2c','t1a','t1b','mfg','dca','dcb','c1','c2','c3']
+  }
+];
+
+let vidState = {
+  playing: false,
+  sceneIdx: 0,
+  frame: 0,
+  tick: 0,
+  raf: null,
+  particles: [],
+  lastSpawn: 0,
+  nodeReveal: {},  // id -> reveal progress 0-1
+  initialized: false
+};
+
+function vidInitCanvas() {
+  const c = document.getElementById('vid-canvas');
+  if (!c) return;
+  c.width = c.parentElement.clientWidth || 700;
+  c.height = 340;
+  vidBuildDots();
+  vidRenderStatic();
+  vidState.initialized = true;
+}
+
+function vidBuildDots() {
+  const wrap = document.getElementById('vid-dots');
+  if (!wrap) return;
+  wrap.innerHTML = VID_SCENES.map((s, i) =>
+    `<div id="vdot-${i}" onclick="vidGoScene(${i})" style="width:8px;height:8px;border-radius:50%;background:${i===0?'var(--gold)':'var(--border2)'};cursor:pointer;transition:background .2s;border:1px solid var(--border2)"></div>`
+  ).join('');
+}
+
+function vidUpdateDots() {
+  VID_SCENES.forEach((s, i) => {
+    const d = document.getElementById('vdot-' + i);
+    if (d) d.style.background = i === vidState.sceneIdx ? 'var(--gold)' : 'var(--border2)';
+  });
+}
+
+function vidUpdateUI() {
+  const s = VID_SCENES[vidState.sceneIdx];
+  const totalSecs = VID_SCENES.reduce((a, sc) => a + sc.duration, 0) / 60;
+  const elapsed = (VID_SCENES.slice(0, vidState.sceneIdx).reduce((a, sc) => a + sc.duration, 0) + vidState.frame) / 60;
+  document.getElementById('vid-scene-label').textContent = 'Scene ' + (vidState.sceneIdx + 1) + ' of ' + VID_SCENES.length;
+  document.getElementById('vid-scene-title').textContent = s.title;
+  document.getElementById('vid-narration').textContent = s.narration;
+  document.getElementById('vid-time').textContent = fmtTime(elapsed) + ' / ' + fmtTime(totalSecs);
+  const totalFrames = VID_SCENES.reduce((a, sc) => a + sc.duration, 0);
+  const doneFrames = VID_SCENES.slice(0, vidState.sceneIdx).reduce((a, sc) => a + sc.duration, 0) + vidState.frame;
+  document.getElementById('vid-prog').style.width = Math.round(doneFrames / totalFrames * 100) + '%';
+  document.getElementById('vid-play-btn').textContent = vidState.playing ? '⏸ Pause' : '▶ Play';
+  vidUpdateDots();
+}
+
+function fmtTime(s) {
+  const m = Math.floor(s / 60);
+  const sec = Math.floor(s % 60);
+  return m + ':' + String(sec).padStart(2, '0');
+}
+
+function vidPlay() {
+  if (!vidState.initialized) vidInitCanvas();
+  const overlay = document.getElementById('vid-overlay');
+  if (overlay) overlay.style.opacity = '0';
+  setTimeout(() => { if (overlay) overlay.style.display = 'none'; }, 300);
+  if (vidState.playing) {
+    vidState.playing = false;
+    cancelAnimationFrame(vidState.raf);
+    document.getElementById('vid-play-btn').textContent = '▶ Play';
+    return;
+  }
+  vidState.playing = true;
+  document.getElementById('vid-play-btn').textContent = '⏸ Pause';
+  vidLoop();
+}
+
+function vidLoop() {
+  if (!vidState.playing) return;
+  vidState.frame++;
+  vidState.tick++;
+  const scene = VID_SCENES[vidState.sceneIdx];
+  if (vidState.frame >= scene.duration) {
+    if (vidState.sceneIdx < VID_SCENES.length - 1) {
+      vidState.sceneIdx++;
+      vidState.frame = 0;
+      vidState.particles = [];
+      vidState.nodeReveal = {};
+    } else {
+      vidState.playing = false;
+      document.getElementById('vid-play-btn').textContent = '▶ Play';
+      vidUpdateUI();
+      return;
+    }
+  }
+  vidRenderScene();
+  vidUpdateUI();
+  vidState.raf = requestAnimationFrame(vidLoop);
+}
+
+function vidRenderStatic() {
+  vidRenderScene();
+  vidUpdateUI();
+}
+
+function vidRenderScene() {
+  const c = document.getElementById('vid-canvas');
+  if (!c) return;
+  const ctx = c.getContext('2d');
+  const W = c.width, H = c.height;
+  const scene = VID_SCENES[vidState.sceneIdx];
+  const progress = vidState.frame / scene.duration;
+
+  ctx.clearRect(0, 0, W, H);
+
+  // dark gradient background
+  const bgGrad = ctx.createLinearGradient(0, 0, W, H);
+  bgGrad.addColorStop(0, '#07090e');
+  bgGrad.addColorStop(1, '#0d1320');
+  ctx.fillStyle = bgGrad;
+  ctx.fillRect(0, 0, W, H);
+
+  // subtle grid
+  ctx.strokeStyle = 'rgba(255,255,255,.025)';
+  ctx.lineWidth = 1;
+  for (let x = 0; x < W; x += 40) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
+  for (let y = 0; y < H; y += 40) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+
+  // resolve node positions
+  const pos = {};
+  scene.nodes.forEach(n => { pos[n.id] = { x: n.x * W, y: n.y * H, col: n.col, label: n.label, sub: n.sub }; });
+
+  // reveal nodes progressively
+  scene.nodes.forEach((n, i) => {
+    const revealAt = i / scene.nodes.length * 0.5;
+    if (progress >= revealAt) {
+      const r = vidState.nodeReveal[n.id] || 0;
+      vidState.nodeReveal[n.id] = Math.min(1, r + 0.06);
+    }
+  });
+
+  // spawn particles along edges
+  if (vidState.playing && vidState.tick % 8 === 0) {
+    scene.edges.forEach(([a, b]) => {
+      if (Math.random() < 0.7) {
+        const pa = pos[a], pb = pos[b];
+        if (pa && pb) {
+          vidState.particles.push({ ax: pa.x, ay: pa.y, bx: pb.x, by: pb.y, t: 0, speed: 0.012 + Math.random() * 0.01, col: pa.col });
+        }
+      }
+    });
+  }
+  vidState.particles = vidState.particles.filter(p => p.t <= 1);
+  vidState.particles.forEach(p => { if (vidState.playing) p.t += p.speed; });
+
+  // special flows scene
+  if (scene.showFlows) {
+    drawFlowsScene(ctx, W, H, pos, progress);
+  }
+
+  // draw edges
+  scene.edges.forEach(([a, b]) => {
+    const pa = pos[a], pb = pos[b];
+    if (!pa || !pb) return;
+    const ra = vidState.nodeReveal[a] || 0;
+    const rb = vidState.nodeReveal[b] || 0;
+    const alpha = Math.min(ra, rb) * 0.15;
+    ctx.beginPath(); ctx.moveTo(pa.x, pa.y); ctx.lineTo(pb.x, pb.y);
+    ctx.strokeStyle = `rgba(255,255,255,${alpha})`; ctx.lineWidth = 1.2; ctx.setLineDash([]); ctx.stroke();
+  });
+
+  // draw particles
+  vidState.particles.forEach(p => {
+    const px = p.ax + (p.bx - p.ax) * p.t;
+    const py = p.ay + (p.by - p.ay) * p.t;
+    ctx.beginPath(); ctx.arc(px, py, 4, 0, Math.PI * 2);
+    ctx.fillStyle = p.col; ctx.fill();
+    ctx.beginPath(); ctx.arc(px, py, 7, 0, Math.PI * 2);
+    ctx.fillStyle = p.col + '30'; ctx.fill();
+  });
+
+  // draw nodes
+  scene.nodes.forEach(n => {
+    const p = pos[n.id];
+    if (!p) return;
+    const rev = vidState.nodeReveal[n.id] || 0;
+    if (rev <= 0) return;
+    const isHL = scene.highlight && scene.highlight.includes(n.id);
+    const r = n.id === 'mfg' ? 26 : (n.id.startsWith('dc') || n.id.startsWith('DC') || n.id.endsWith('_us') || n.id.endsWith('_west') || n.id === 'dca' || n.id === 'dcb') ? 18 : 13;
+    const alpha = rev;
+    // pulse ring for highlighted
+    if (isHL && vidState.playing) {
+      const pulse = 0.5 + 0.5 * Math.sin(vidState.tick * 0.08);
+      ctx.beginPath(); ctx.arc(p.x, p.y, r + 8 + pulse * 4, 0, Math.PI * 2);
+      ctx.strokeStyle = n.col + Math.round(pulse * 40 + 10).toString(16).padStart(2,'0');
+      ctx.lineWidth = 1.5; ctx.stroke();
+    }
+    ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+    ctx.fillStyle = n.col + Math.round(alpha * 0x28).toString(16).padStart(2, '0');
+    ctx.fill();
+    ctx.strokeStyle = n.col + Math.round(alpha * 0xff).toString(16).padStart(2, '0');
+    ctx.lineWidth = isHL ? 2 : 1.5; ctx.stroke();
+    // center dot
+    ctx.beginPath(); ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
+    ctx.fillStyle = n.col; ctx.fill();
+    // label
+    ctx.globalAlpha = alpha;
+    ctx.fillStyle = '#eef2f7';
+    ctx.font = `${isHL ? '600' : '500'} ${n.id === 'mfg' ? 12 : 10}px Syne,sans-serif`;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+    ctx.fillText(n.label, p.x, p.y + r + 4);
+    ctx.font = '400 8px Inter,sans-serif'; ctx.fillStyle = '#6b849e';
+    ctx.fillText(n.sub, p.x, p.y + r + 16);
+    ctx.globalAlpha = 1;
+  });
+
+  // scene progress indicator (thin line at bottom of canvas)
+  ctx.fillStyle = 'rgba(201,168,76,.15)';
+  ctx.fillRect(0, H - 3, W * progress, 3);
+}
+
+function drawFlowsScene(ctx, W, H, pos, progress) {
+  const t = vidState.tick;
+  // product flow arrow (downstream, gold)
+  if (progress > 0.1) {
+    const alpha = Math.min(1, (progress - 0.1) / 0.2);
+    drawFlowArrow(ctx, W * 0.12, H * 0.38, W * 0.82, H * 0.38, '#c9a84c', alpha, 'Product Flow →', t, false);
+  }
+  // information flow (both ways, blue)
+  if (progress > 0.3) {
+    const alpha = Math.min(1, (progress - 0.3) / 0.2);
+    drawFlowArrow(ctx, W * 0.12, H * 0.52, W * 0.82, H * 0.52, '#3b82f6', alpha, '← Information Flow →', t, true);
+  }
+  // financial flow (upstream, green)
+  if (progress > 0.5) {
+    const alpha = Math.min(1, (progress - 0.5) / 0.2);
+    drawFlowArrow(ctx, W * 0.82, H * 0.66, W * 0.12, H * 0.66, '#10b981', alpha, '← Financial Flow', t, false);
+  }
+}
+
+function drawFlowArrow(ctx, x1, y1, x2, y2, col, alpha, label, tick, bidirectional) {
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  // dashed line
+  ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2);
+  ctx.strokeStyle = col; ctx.lineWidth = 1.5; ctx.setLineDash([6, 4]); ctx.lineDashOffset = -(tick * 1.5) % 20;
+  ctx.stroke(); ctx.setLineDash([]);
+  // arrowhead
+  const ang = Math.atan2(y2 - y1, x2 - x1);
+  ctx.save(); ctx.translate(x2, y2); ctx.rotate(ang);
+  ctx.beginPath(); ctx.moveTo(-10, -5); ctx.lineTo(0, 0); ctx.lineTo(-10, 5);
+  ctx.strokeStyle = col; ctx.lineWidth = 2; ctx.stroke(); ctx.restore();
+  if (bidirectional) {
+    ctx.save(); ctx.translate(x1, y1); ctx.rotate(ang + Math.PI);
+    ctx.beginPath(); ctx.moveTo(-10, -5); ctx.lineTo(0, 0); ctx.lineTo(-10, 5);
+    ctx.strokeStyle = col; ctx.lineWidth = 2; ctx.stroke(); ctx.restore();
+  }
+  // label
+  ctx.font = '600 11px Syne,sans-serif'; ctx.fillStyle = col;
+  ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+  ctx.fillText(label, (x1 + x2) / 2, y1 - 6);
+  ctx.restore();
+}
+
+function vidGoScene(idx) {
+  vidState.sceneIdx = idx;
+  vidState.frame = 0;
+  vidState.particles = [];
+  vidState.nodeReveal = {};
+  if (!vidState.initialized) vidInitCanvas();
+  vidRenderStatic();
+  vidUpdateUI();
+}
+
+function vidNextScene() {
+  if (vidState.sceneIdx < VID_SCENES.length - 1) vidGoScene(vidState.sceneIdx + 1);
+}
+
+function vidPrevScene() {
+  if (vidState.sceneIdx > 0) vidGoScene(vidState.sceneIdx - 1);
+}
+
+function vidRestart() {
+  vidState.playing = false;
+  cancelAnimationFrame(vidState.raf);
+  vidState.sceneIdx = 0;
+  vidState.frame = 0;
+  vidState.particles = [];
+  vidState.nodeReveal = {};
+  const overlay = document.getElementById('vid-overlay');
+  if (overlay) { overlay.style.display = 'flex'; overlay.style.opacity = '1'; }
+  vidRenderStatic();
+  vidUpdateUI();
+  document.getElementById('vid-play-btn').textContent = '▶ Play';
+}
+
+// video canvas init handled inside goSec directly
+
+// ══════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════
+window.addEventListener('DOMContentLoaded',()=>{
+  buildQuiz();
+  revealElements();
+  window.addEventListener('resize',initFlowCanvas);
+});
+</script>
+</body>
+</html>
