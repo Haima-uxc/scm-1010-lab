@@ -1,0 +1,1397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SCM 1010 · Chapter 2 — Customer Service & Satisfaction</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#07090e;--bg2:#0d1320;--bg3:#121c2e;--bg4:#172238;
+  --border:#1c2d42;--border2:#243650;
+  --gold:#c9a84c;--gold2:#e8c96a;
+  --blue:#3b82f6;--blue2:#60a5fa;
+  --green:#10b981;--green2:#34d399;
+  --red:#ef4444;--red2:#f87171;
+  --amber:#f59e0b;--amber2:#fbbf24;
+  --purple:#8b5cf6;--purple2:#a78bfa;
+  --white:#eef2f7;--gray:#3d5470;--gray2:#6b849e;--gray3:#9ab0c5;
+  --font-h:system-ui,-apple-system,'Segoe UI',sans-serif;
+  --font-b:system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+html,body{height:100%;background:var(--bg);color:var(--white);font-family:var(--font-b);font-size:14px;overflow:hidden}
+#shell{display:grid;grid-template-rows:52px 1fr;height:100vh}
+.topbar{background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 1.4rem;gap:1rem}
+.tb-left{display:flex;align-items:center;gap:.9rem}
+.logo{width:32px;height:32px;background:var(--gold);border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.8rem;color:var(--bg);flex-shrink:0}
+.tb-title{font-size:.9rem;font-weight:700}
+.tb-sub{font-size:.72rem;color:var(--gray2);margin-left:.3rem}
+.tb-right{display:flex;align-items:center;gap:.7rem}
+.ch-pills{display:flex;gap:.3rem}
+.ch-pill{padding:.25rem .65rem;border-radius:20px;font-size:.7rem;font-weight:600;letter-spacing:.04em;border:1px solid var(--border);color:var(--gray2);cursor:pointer;transition:all .2s;text-decoration:none;display:inline-block}
+.ch-pill:hover{border-color:var(--border2);color:var(--white)}
+.ch-pill.active{background:rgba(201,168,76,.12);border-color:var(--gold);color:var(--gold)}
+.ch-pill.done{background:rgba(16,185,129,.08);border-color:rgba(16,185,129,.4);color:var(--green2)}
+.ch-pill.locked{opacity:.4;cursor:not-allowed;pointer-events:none}
+.stu-pill{display:flex;align-items:center;gap:.5rem;background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:.22rem .7rem .22rem .3rem}
+.stu-av{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.65rem;flex-shrink:0;color:var(--bg)}
+.stu-nm{font-size:.75rem;font-weight:500}
+.main-layout{display:grid;grid-template-columns:230px 1fr;height:100%;overflow:hidden}
+.sidebar{background:var(--bg2);border-right:1px solid var(--border);overflow-y:auto;padding:.9rem .7rem;display:flex;flex-direction:column;gap:.15rem}
+.sb-head{font-size:.62rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--gray);padding:.6rem .5rem .2rem}
+.sb-item{display:flex;align-items:center;gap:.55rem;padding:.5rem .6rem;border-radius:7px;cursor:pointer;font-size:.8rem;color:var(--gray2);border:none;background:none;width:100%;text-align:left;transition:all .15s}
+.sb-item:hover{background:var(--bg3);color:var(--white)}
+.sb-item.active{background:rgba(201,168,76,.1);color:var(--gold)}
+.sb-icon{font-size:.9rem;width:18px;text-align:center;flex-shrink:0}
+.sb-badge{margin-left:auto;font-size:.62rem;font-weight:600;padding:.1rem .38rem;border-radius:4px}
+.prog-box{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:.8rem;margin-bottom:.5rem}
+.prog-row{display:flex;justify-content:space-between;margin-bottom:.4rem}
+.prog-row span{font-size:.7rem;color:var(--gray2)}
+.prog-row strong{font-size:.7rem;color:var(--gold)}
+.prog-track{height:3px;background:var(--bg4);border-radius:3px}
+.prog-fill{height:3px;background:var(--gold);border-radius:3px;transition:width .5s ease}
+.content-area{overflow-y:auto;overflow-x:hidden;position:relative}
+.sec{display:none;padding:0}
+.sec.active{display:block}
+.sc-wrap{padding:2.5rem 3.5rem 4rem;max-width:1000px}
+.sc-tag{font-size:.68rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:.5rem}
+.sc-title{font-size:clamp(1.6rem,2.5vw,2.2rem);font-weight:800;line-height:1.1;margin-bottom:.7rem}
+.sc-lead{color:var(--gray3);font-size:.9rem;max-width:650px;line-height:1.8;margin-bottom:2rem}
+.reveal{opacity:0;transform:translateY(20px);transition:opacity .5s,transform .5s}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.def-card{background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--gold);border-radius:10px;padding:1.3rem 1.5rem;margin-bottom:1.2rem}
+.def-card .dc-label{font-size:.68rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:.4rem}
+.def-card .dc-text{font-size:.9rem;line-height:1.8;color:var(--gray3)}
+.def-card .dc-text strong{color:var(--white);font-weight:500}
+.nav-row{display:flex;justify-content:space-between;align-items:center;padding:2rem 3.5rem 3rem;border-top:1px solid var(--border);margin-top:2rem}
+.btn-nav{background:var(--bg2);color:var(--white);font-weight:600;font-size:.82rem;border:1px solid var(--border);border-radius:8px;padding:.6rem 1.3rem;cursor:pointer;transition:all .2s}
+.btn-nav:hover{border-color:var(--border2);background:var(--bg3)}
+.btn-nav.primary{background:var(--gold);color:var(--bg);border-color:var(--gold)}
+.btn-nav.primary:hover{background:var(--gold2)}
+
+/* ── HERO ── */
+.hero{min-height:calc(100vh - 52px);display:flex;flex-direction:column;justify-content:center;padding:3rem 3.5rem;position:relative;overflow:hidden;background:radial-gradient(ellipse at 30% 60%, rgba(59,130,246,.05) 0%,transparent 55%),radial-gradient(ellipse at 80% 20%,rgba(16,185,129,.04) 0%,transparent 50%)}
+.hero-eyebrow{font-size:.72rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--blue2);margin-bottom:1rem;opacity:0;animation:fadeUp .6s .1s forwards}
+.hero-title{font-size:clamp(2.2rem,4vw,3.8rem);font-weight:800;line-height:1.05;margin-bottom:1.2rem;opacity:0;animation:fadeUp .6s .25s forwards}
+.hero-title em{font-style:normal;color:var(--blue2)}
+.hero-desc{font-size:.95rem;color:var(--gray3);max-width:580px;line-height:1.8;margin-bottom:2.5rem;opacity:0;animation:fadeUp .6s .4s forwards}
+.hero-stats{display:flex;gap:2.5rem;margin-bottom:2.5rem;opacity:0;animation:fadeUp .6s .55s forwards}
+.hstat .val{font-size:2rem;font-weight:800;color:var(--white);line-height:1}
+.hstat .lbl{font-size:.72rem;color:var(--gray2);margin-top:.2rem}
+.hero-cta{opacity:0;animation:fadeUp .6s .7s forwards}
+.btn-start{background:var(--blue);color:var(--white);font-weight:700;font-size:.9rem;letter-spacing:.04em;border:none;border-radius:8px;padding:.8rem 2rem;cursor:pointer;transition:background .2s,transform .1s}
+.btn-start:hover{background:var(--blue2);transform:translateY(-1px)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── CUSTOMER SERVICE SPECTRUM ── */
+.spectrum-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:1.5rem}
+.spectrum-canvas-wrap{position:relative}
+#spectrum-canvas{display:block;width:100%}
+.spectrum-controls{padding:.8rem 1.2rem;border-top:1px solid var(--border);display:flex;align-items:center;gap:.8rem;flex-wrap:wrap}
+.spec-label{font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--gray2)}
+.spec-btn{padding:.35rem .8rem;border-radius:6px;border:1px solid var(--border);background:none;color:var(--gray2);font-size:.75rem;cursor:pointer;transition:all .15s}
+.spec-btn:hover{border-color:var(--border2);color:var(--white)}
+.spec-btn.active{border-color:var(--blue);background:rgba(59,130,246,.1);color:var(--blue2)}
+
+/* ── KPI CARDS ── */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.8rem;margin:1.2rem 0}
+.kpi-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1.2rem;cursor:pointer;transition:all .2s}
+.kpi-card:hover{border-color:var(--border2);transform:translateY(-2px)}
+.kpi-card.open{border-color:var(--blue)}
+.kpi-icon{font-size:1.3rem;margin-bottom:.5rem}
+.kpi-name{font-weight:700;font-size:.88rem;margin-bottom:.2rem}
+.kpi-formula{font-size:.75rem;color:var(--blue2);font-family:monospace;margin-bottom:.3rem;background:rgba(59,130,246,.08);padding:.2rem .5rem;border-radius:4px;display:inline-block}
+.kpi-short{font-size:.78rem;color:var(--gray2);line-height:1.5}
+.kpi-expand{display:none;margin-top:.8rem;padding-top:.8rem;border-top:1px solid var(--border);font-size:.78rem;color:var(--gray3);line-height:1.65}
+.kpi-card.open .kpi-expand{display:block}
+
+/* ── SCENARIO SIMULATOR ── */
+.scenario-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin:1.5rem 0}
+.scenario-header{padding:1rem 1.2rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.scenario-header h3{font-size:.85rem;font-weight:700;color:var(--amber2)}
+.scenario-body{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.scenario-left{padding:1.2rem;border-right:1px solid var(--border)}
+.scenario-right{padding:1.2rem}
+.sc-scenario-label{font-size:.68rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gray2);margin-bottom:.6rem}
+.scenario-btn{display:block;width:100%;text-align:left;padding:.65rem .9rem;background:var(--bg3);border:1px solid var(--border);border-radius:7px;font-size:.82rem;color:var(--gray2);cursor:pointer;transition:all .15s;margin-bottom:.4rem}
+.scenario-btn:hover{border-color:var(--border2);color:var(--white)}
+.scenario-btn.active{border-color:var(--amber);background:rgba(245,158,11,.08);color:var(--amber2)}
+.outcome-grid{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.8rem}
+.outcome-card{background:var(--bg3);border-radius:7px;padding:.75rem;text-align:center}
+.outcome-val{font-size:1.4rem;font-weight:800;line-height:1;display:block;transition:color .3s}
+.outcome-lbl{font-size:.65rem;text-transform:uppercase;letter-spacing:.07em;color:var(--gray2);margin-top:.15rem}
+.outcome-card.good .outcome-val{color:var(--green2)}
+.outcome-card.warn .outcome-val{color:var(--amber2)}
+.outcome-card.bad .outcome-val{color:var(--red2)}
+.scenario-explain{font-size:.8rem;color:var(--gray3);line-height:1.7;padding:.8rem;background:var(--bg3);border-radius:7px;border-left:3px solid var(--amber)}
+
+/* ── ELEMENTS OF CS ── */
+.elements-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.8rem;margin:1.2rem 0}
+.el-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1.1rem;transition:border-color .2s;cursor:pointer}
+.el-card:hover{border-color:var(--border2)}
+.el-card.active{border-color:var(--blue)}
+.el-top{display:flex;align-items:center;gap:.6rem;margin-bottom:.5rem}
+.el-icon{font-size:1.1rem;flex-shrink:0}
+.el-name{font-weight:700;font-size:.85rem}
+.el-desc{font-size:.78rem;color:var(--gray2);line-height:1.55}
+.el-expand{display:none;margin-top:.7rem;padding-top:.7rem;border-top:1px solid var(--border);font-size:.78rem;color:var(--gray3);line-height:1.65}
+.el-card.active .el-expand{display:block}
+
+/* ── SATISFACTION MODEL ── */
+.model-canvas-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin:1.2rem 0}
+#model-canvas{display:block;width:100%}
+
+/* ── QUIZ ── */
+.quiz-block{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1.5rem;margin:1.5rem 0}
+.quiz-q{font-size:.92rem;font-weight:500;margin-bottom:1rem;line-height:1.6}
+.quiz-opts{display:flex;flex-direction:column;gap:.5rem}
+.qopt{background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:.65rem 1rem;cursor:pointer;font-size:.83rem;transition:all .2s;text-align:left}
+.qopt:hover{border-color:var(--border2);color:var(--white)}
+.qopt.correct{border-color:var(--green);background:rgba(16,185,129,.08);color:var(--green2)}
+.qopt.wrong{border-color:var(--red);background:rgba(239,68,68,.08);color:#f87171}
+.qopt.show-correct{border-color:var(--green);background:rgba(16,185,129,.05);color:var(--green2)}
+.quiz-feedback{display:none;margin-top:1rem;padding:.8rem 1rem;border-radius:7px;font-size:.82rem;line-height:1.6}
+.quiz-feedback.show{display:block}
+.quiz-feedback.good{background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);color:var(--green2)}
+.quiz-feedback.bad{background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.2);color:#f87171}
+.btn-next-q{margin-top:.8rem;background:var(--gold);color:var(--bg);font-weight:700;font-size:.8rem;border:none;border-radius:7px;padding:.5rem 1.2rem;cursor:pointer;display:none}
+.btn-next-q.show{display:inline-block}
+
+/* ── NOTIFICATION ── */
+.notif{position:fixed;top:62px;right:1.2rem;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:.9rem 1.1rem;max-width:280px;z-index:300;transform:translateX(320px);transition:transform .35s cubic-bezier(.175,.885,.32,1.275)}
+.notif.show{transform:translateX(0)}
+.notif.success{border-color:rgba(16,185,129,.4)}
+.notif.warn{border-color:rgba(245,158,11,.4)}
+.notif .nt{font-weight:700;font-size:.85rem;margin-bottom:.2rem}
+.notif .nb{font-size:.77rem;color:var(--gray2);line-height:1.5}
+
+/* LOGIN */
+#login-overlay{position:fixed;inset:0;background:var(--bg);z-index:500;display:flex;align-items:center;justify-content:center;padding:1.5rem}
+.login-inner{width:100%;max-width:420px}
+.login-logo-row{display:flex;align-items:center;gap:.8rem;margin-bottom:2.5rem}
+.field label{display:block;font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gray2);margin-bottom:.4rem}
+.field input{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:.75rem 1rem;color:var(--white);font-family:var(--font-b);font-size:.9rem;outline:none;transition:border-color .2s;margin-bottom:1rem}
+.field input:focus{border-color:var(--blue)}
+.btn-enter{width:100%;background:var(--blue);color:var(--white);font-weight:700;font-size:.95rem;border:none;border-radius:8px;padding:.85rem;cursor:pointer;transition:background .2s}
+.btn-enter:hover{background:var(--blue2)}
+
+/* ── SEGMENTATION ── */
+.seg-customer{display:inline-flex;align-items:center;gap:.4rem;padding:.35rem .65rem;background:var(--bg2);border:1px solid var(--border2);border-radius:6px;cursor:grab;font-size:.75rem;font-weight:500;user-select:none;transition:border-color .15s}
+.seg-customer:hover{border-color:var(--gold)}
+.seg-customer.in-tier{cursor:grab;font-size:.72rem}
+
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-overlay">
+  <div class="login-inner">
+    <div class="login-logo-row">
+      <div class="logo">SC</div>
+      <div><div style="font-weight:700;font-size:.9rem">Supply Chain Lab</div><div style="font-size:.72rem;color:var(--gray2)">SCM 1010 · Georgia College</div></div>
+    </div>
+    <div style="font-weight:800;font-size:2.4rem;line-height:1.1;margin-bottom:.6rem">Chapter 2.<br/><span style="color:var(--blue2)">Customer Service<br/>& Satisfaction.</span></div>
+    <p style="color:var(--gray2);font-size:.88rem;line-height:1.7;margin-bottom:2rem">What does it mean to serve a customer well — and how do supply chains measure, manage, and improve it? This chapter gives you the frameworks and tools.</p>
+    <div class="field"><label>Full Name</label><input id="inp-name" type="text" placeholder="e.g. Jordan Williams" autocomplete="off"/></div>
+    <div class="field"><label>Student ID</label><input id="inp-id" type="text" placeholder="e.g. 20240042" autocomplete="off"/></div>
+    <button class="btn-enter" onclick="doLogin()">Enter Chapter 2 →</button>
+    <p style="text-align:center;color:var(--gray);font-size:.75rem;margin-top:1rem">Your progress saves automatically.</p>
+  </div>
+</div>
+
+<!-- SHELL -->
+<div id="shell">
+  <div class="topbar">
+    <div class="tb-left">
+      <div class="logo">SC</div>
+      <div><span class="tb-title">Supply Chain Lab</span><span class="tb-sub">· SCM 1010</span></div>
+    </div>
+    <div class="tb-right">
+      <div class="ch-pills">
+        <a class="ch-pill done" href="sc_chapter1.html">Ch 1</a>
+        <span class="ch-pill active">Ch 2</span>
+        <span class="ch-pill locked">Ch 3</span>
+        <span class="ch-pill locked">Ch 4</span>
+        <span class="ch-pill locked">Ch 5</span>
+        <span class="ch-pill locked">Ch 6</span>
+      </div>
+      <div class="stu-pill">
+        <div class="stu-av" id="hdr-av" style="background:var(--blue)">JW</div>
+        <span class="stu-nm" id="hdr-nm">Student</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="main-layout">
+    <div class="sidebar">
+      <div class="prog-box">
+        <div class="prog-row"><span>Chapter Progress</span><strong id="prog-pct">0%</strong></div>
+        <div class="prog-track"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+      </div>
+      <div class="sb-head">Chapter 2</div>
+      <button class="sb-item active" id="sb-hero" onclick="goSec('hero')"><span class="sb-icon">🏠</span>Introduction</button>
+      <button class="sb-item" id="sb-what" onclick="goSec('what')"><span class="sb-icon">🤝</span>What Is Customer Service?</button>
+      <button class="sb-item" id="sb-elements" onclick="goSec('elements')"><span class="sb-icon">📋</span>Elements of CS</button>
+      <button class="sb-item" id="sb-spectrum" onclick="goSec('spectrum')"><span class="sb-icon">📊</span>The Service Spectrum</button>
+      <button class="sb-item" id="sb-kpis" onclick="goSec('kpis')"><span class="sb-icon">📈</span>Metrics & KPIs</button>
+      <button class="sb-item" id="sb-scenarios" onclick="goSec('scenarios')"><span class="sb-icon">⚡</span>Service Failure Simulator</button>
+      <button class="sb-item" id="sb-satisfaction" onclick="goSec('satisfaction')"><span class="sb-icon">⭐</span>Satisfaction Model</button>
+      <button class="sb-item" id="sb-segment" onclick="goSec('segment')"><span class="sb-icon">🗂️</span>Customer Segmentation<span class="sb-badge" style="background:rgba(139,92,246,.15);color:#a78bfa">Tool</span></button>
+      <button class="sb-item" id="sb-sla" onclick="goSec('sla')"><span class="sb-icon">📝</span>SLA Builder<span class="sb-badge" style="background:rgba(16,185,129,.12);color:#34d399">Tool</span></button>
+      <button class="sb-item" id="sb-practical1" onclick="goSec('practical1')"><span class="sb-icon">🔧</span>Real‑World Application</button>
+      <button class="sb-item" id="sb-practical2" onclick="goSec('practical2')"><span class="sb-icon">🏪</span>Small Business Application</button>
+      <button class="sb-item" id="sb-quiz" onclick="goSec('quiz')"><span class="sb-icon">🎯</span>Check Understanding<span class="sb-badge" style="background:rgba(201,168,76,.12);color:var(--gold)">5 Qs</span></button>
+    </div>
+
+    <div class="content-area" id="content-area">
+
+      <!-- ═══ HERO ═══ -->
+      <div class="sec active" id="sec-hero">
+        <div class="hero">
+          <div class="hero-eyebrow">SCM 1010 · Chapter 2</div>
+          <div class="hero-title">Customer Service<br/>& <em>Satisfaction</em></div>
+          <div class="hero-desc">Supply chains exist for one reason — to serve customers. But "customer service" means something precise in supply chain management: specific elements, measurable metrics, and a direct link to profitability. This chapter teaches you how to measure, manage, and improve it.</div>
+          <div class="hero-stats">
+            <div class="hstat"><div class="val">96%</div><div class="lbl">Fill rate target at top companies</div></div>
+            <div class="hstat"><div class="val">5×</div><div class="lbl">Cost to acquire vs. retain a customer</div></div>
+            <div class="hstat"><div class="val">$62B</div><div class="lbl">Lost annually to poor customer service (US)</div></div>
+          </div>
+          <div class="hero-cta"><button class="btn-start" onclick="goSec('what')">Start Chapter 2 →</button></div>
+        </div>
+      </div>
+
+      <!-- ═══ WHAT IS CUSTOMER SERVICE ═══ -->
+      <div class="sec" id="sec-what">
+        <div class="sc-wrap">
+          <div class="sc-tag reveal">Chapter 2 · Foundations</div>
+          <div class="sc-title reveal">What Is Customer Service in Supply Chain?</div>
+          <div class="sc-lead reveal">Customer service is not just a helpline or a returns desk. In supply chain management, it is the set of outcomes a company delivers to its customers — and the system it builds to deliver them consistently.</div>
+          <div class="def-card reveal">
+            <div class="dc-label">Stock & Lambert Definition</div>
+            <div class="dc-text">Customer service is <strong>a process for providing significant value-added benefits to the supply chain in a cost-effective way</strong>. It is the output of the entire logistics system — the point where all the upstream planning, procurement, manufacturing, and distribution activities either deliver value or fail to.</div>
+          </div>
+          <div class="def-card reveal" style="border-left-color:var(--blue)">
+            <div class="dc-label" style="color:var(--blue2)">Three Dimensions of Customer Service</div>
+            <div class="dc-text">
+              <strong>Pre-transaction elements</strong> — what you promise before the order is placed: written service policies, organizational structure, system flexibility, and technical services.<br/><br/>
+              <strong>Transaction elements</strong> — what happens during fulfillment: product availability, order cycle time, order status information, backorder management, and shipment accuracy.<br/><br/>
+              <strong>Post-transaction elements</strong> — what happens after delivery: returns handling, warranty claims, complaint resolution, and product tracking.
+            </div>
+          </div>
+          <div class="def-card reveal" style="border-left-color:var(--green)">
+            <div class="dc-label" style="color:var(--green2)">Why It Drives Profitability</div>
+            <div class="dc-text">Customer service directly affects revenue. A company with a <strong>95% fill rate</strong> retains customers at a much higher rate than one with 85%. But higher service levels cost more — more inventory, faster transportation, more warehouse capacity. The strategic challenge is finding the <strong>optimal service level</strong> where the revenue gained from better service exceeds the cost of providing it.</div>
+          </div>
+          <div class="nav-row">
+            <button class="btn-nav" onclick="goSec('hero')">← Introduction</button>
+            <button class="btn-nav primary" onclick="goSec('elements')">Elements of CS →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ ELEMENTS ═══ -->
+      <div class="sec" id="sec-elements">
+        <div class="sc-wrap">
+          <div class="sc-tag reveal">Chapter 2 · Elements</div>
+          <div class="sc-title reveal">The Elements of Customer Service</div>
+          <div class="sc-lead reveal">Stock & Lambert identify specific, measurable elements of customer service. These are not vague concepts — each one can be tracked, benchmarked, and improved. Click any element to see how it works in practice.</div>
+          <div class="elements-grid reveal">
+            <div class="el-card" onclick="this.classList.toggle('active')">
+              <div class="el-top"><span class="el-icon">📦</span><span class="el-name">Product Availability</span></div>
+              <div class="el-desc">The probability that a product is in stock when a customer orders it.</div>
+              <div class="el-expand">Measured as fill rate — the percentage of orders filled from available inventory. A 95% fill rate means 1 in 20 orders experiences a stockout. Top retailers demand 98%+ from suppliers. Every percentage point below target has a measurable revenue and relationship cost.</div>
+            </div>
+            <div class="el-card" onclick="this.classList.toggle('active')">
+              <div class="el-top"><span class="el-icon">⏱️</span><span class="el-name">Order Cycle Time</span></div>
+              <div class="el-desc">The elapsed time from when a customer places an order to when they receive it.</div>
+              <div class="el-expand">Order cycle time = order processing time + production/pick time + transit time. Reducing it requires faster processing systems, better warehouse organization, and carrier network optimization. Leading e-commerce companies have compressed this to same-day for millions of SKUs — resetting customer expectations industry-wide.</div>
+            </div>
+            <div class="el-card" onclick="this.classList.toggle('active')">
+              <div class="el-top"><span class="el-icon">📋</span><span class="el-name">Order Accuracy</span></div>
+              <div class="el-desc">The percentage of orders shipped with the correct items, quantities, and condition.</div>
+              <div class="el-expand">An inaccurate order creates a cascade of problems: customer dissatisfaction, return processing costs, replacement shipping, and damaged relationships. Best-in-class operations achieve 99.9%+ accuracy using barcode scanning, automated picking, and quality verification at every stage.</div>
+            </div>
+            <div class="el-card" onclick="this.classList.toggle('active')">
+              <div class="el-top"><span class="el-icon">🔄</span><span class="el-name">Order Flexibility</span></div>
+              <div class="el-desc">The ability to accommodate special customer requests — rush orders, custom configurations, partial shipments.</div>
+              <div class="el-expand">Flexibility has real cost. A rush order may require premium freight. A custom configuration requires production changes. Companies must decide which customers warrant flexible service and at what price. Tiered service models — offering premium flexibility to high-value accounts — are a common solution.</div>
+            </div>
+            <div class="el-card" onclick="this.classList.toggle('active')">
+              <div class="el-top"><span class="el-icon">📡</span><span class="el-name">Order Status Info</span></div>
+              <div class="el-desc">The customer's ability to track their order at any point in the cycle.</div>
+              <div class="el-expand">Before real-time tracking became standard, customers accepted uncertainty about order status. Today, it is a baseline expectation. Companies that cannot provide it lose business. EDI systems, shipment tracking portals, and proactive exception alerts (your order is delayed) directly reduce customer service calls and improve satisfaction.</div>
+            </div>
+            <div class="el-card" onclick="this.classList.toggle('active')">
+              <div class="el-top"><span class="el-icon">↩️</span><span class="el-name">Returns Management</span></div>
+              <div class="el-desc">How quickly and easily a customer can return a product — the reverse supply chain.</div>
+              <div class="el-expand">Returns are the fastest-growing segment of logistics. E-commerce return rates average 20–30%. A frictionless returns process is now a competitive differentiator — Some e-commerce companies built competitive advantage partly on free returns. Managing reverse logistics efficiently reduces cost and converts unhappy customers into repeat buyers.</div>
+            </div>
+          </div>
+          <div class="nav-row">
+            <button class="btn-nav" onclick="goSec('what')">← What Is Customer Service?</button>
+            <button class="btn-nav primary" onclick="goSec('spectrum')">The Service Spectrum →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ SPECTRUM ═══ -->
+      <div class="sec" id="sec-spectrum">
+        <div class="sc-wrap">
+          <div class="sc-tag reveal">Chapter 2 · The Spectrum</div>
+          <div class="sc-title reveal">The Customer Service Spectrum</div>
+          <div class="sc-lead reveal">Not all customers need — or want — the same service level. And not all service levels cost the same to deliver. The service-cost tradeoff is one of the most important strategic decisions in supply chain management.</div>
+          <div class="spectrum-wrap reveal">
+            <div class="spectrum-canvas-wrap">
+              <canvas id="spectrum-canvas" height="280"></canvas>
+            </div>
+            <div class="spectrum-controls">
+              <span class="spec-label">View:</span>
+              <button class="spec-btn active" id="spec-btn-cost" onclick="setSpecView('cost')">Cost vs. Service Level</button>
+              <button class="spec-btn" id="spec-btn-revenue" onclick="setSpecView('revenue')">Revenue vs. Service Level</button>
+              <button class="spec-btn" id="spec-btn-profit" onclick="setSpecView('profit')">Profit Optimization</button>
+            </div>
+          </div>
+          <div class="def-card reveal" style="border-left-color:var(--blue)">
+            <div class="dc-label" style="color:var(--blue2)">The Key Insight — Diminishing Returns</div>
+            <div class="dc-text">Moving from 80% to 90% fill rate is relatively inexpensive — it requires modest inventory investment. Moving from 95% to 99% requires <strong>exponentially more inventory</strong> because you are now covering increasingly rare demand spikes. The last few percentage points of service are the most expensive to achieve. This is why most companies target 95–98%, not 100%.</div>
+          </div>
+          <div class="def-card reveal" style="border-left-color:var(--amber)">
+            <div class="dc-label" style="color:var(--amber2)">Segmenting Customers by Service Need</div>
+            <div class="dc-text">A hospital needs 99.9% fill rate on surgical supplies — stockouts cost lives. A retailer selling seasonal decor can tolerate 85%. <strong>Customer segmentation</strong> allows companies to offer differentiated service levels: premium service to high-value accounts, standard service to average accounts, and basic service to transactional customers — matching cost to value.</div>
+          </div>
+          <div class="nav-row">
+            <button class="btn-nav" onclick="goSec('elements')">← Elements of CS</button>
+            <button class="btn-nav primary" onclick="goSec('kpis')">Metrics & KPIs →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ KPIs ═══ -->
+      <div class="sec" id="sec-kpis">
+        <div class="sc-wrap">
+          <div class="sc-tag reveal">Chapter 2 · Measurement</div>
+          <div class="sc-title reveal">Metrics & Key Performance Indicators</div>
+          <div class="sc-lead reveal">You cannot manage what you cannot measure. These are the KPIs that supply chain professionals use to track customer service performance. Click each one to see its formula and what a good result looks like.</div>
+          <div class="kpi-grid reveal">
+            <div class="kpi-card" onclick="this.classList.toggle('open')">
+              <div class="kpi-icon">📦</div>
+              <div class="kpi-name">Fill Rate</div>
+              <div class="kpi-formula">Units shipped / Units ordered</div>
+              <div class="kpi-short">The percentage of demand fulfilled immediately from stock.</div>
+              <div class="kpi-expand">Target: 95–99% depending on industry. A 97% fill rate means 3% of ordered units are backordered or lost. Measured at SKU level, order level, and line level — each tells a different story. Low fill rate = lost sales and customer churn. World-class retailers require 98.5%+ from their suppliers.</div>
+            </div>
+            <div class="kpi-card" onclick="this.classList.toggle('open')">
+              <div class="kpi-icon">⏱️</div>
+              <div class="kpi-name">Order Cycle Time</div>
+              <div class="kpi-formula">Order receipt → Customer receipt</div>
+              <div class="kpi-short">Total elapsed time from order placement to delivery.</div>
+              <div class="kpi-expand">Target varies by industry: same-day (e-commerce), 24–48hrs (food), 3–5 days (B2B). OCT consistency matters as much as speed — a customer can plan around a reliable 5-day cycle, but an unpredictable 2–8 day range creates uncertainty and buffer inventory at the customer side.</div>
+            </div>
+            <div class="kpi-card" onclick="this.classList.toggle('open')">
+              <div class="kpi-icon">✅</div>
+              <div class="kpi-name">Perfect Order Rate</div>
+              <div class="kpi-formula">On-time × Complete × Accurate × Undamaged</div>
+              <div class="kpi-short">The percentage of orders that are perfect across all four dimensions.</div>
+              <div class="kpi-expand">The most demanding single metric. If on-time = 95%, complete = 98%, accurate = 99%, undamaged = 99.5%, then perfect order = 0.95 × 0.98 × 0.99 × 0.995 = 91.6%. This is why perfect order rates are surprisingly low even at good companies. Industry average: ~80%. Top performers: 95%+.</div>
+            </div>
+            <div class="kpi-card" onclick="this.classList.toggle('open')">
+              <div class="kpi-icon">📡</div>
+              <div class="kpi-name">On-Time Delivery</div>
+              <div class="kpi-formula">Orders delivered on time / Total orders</div>
+              <div class="kpi-short">Percentage of orders delivered within the promised window.</div>
+              <div class="kpi-expand">The promised window is the key. A 2-day delivery promise requires different infrastructure than 5-day. OTD is measured against the committed date — not the order date. Consistently missing OTD is one of the fastest ways to lose a retail customer whose own stores depend on reliable replenishment.</div>
+            </div>
+            <div class="kpi-card" onclick="this.classList.toggle('open')">
+              <div class="kpi-icon">😊</div>
+              <div class="kpi-name">Customer Satisfaction Score</div>
+              <div class="kpi-formula">Survey score 1–10 (avg)</div>
+              <div class="kpi-short">Direct customer perception of service quality.</div>
+              <div class="kpi-expand">CSAT, NPS (Net Promoter Score), and CES (Customer Effort Score) are the main survey-based tools. Supply chain performance is a major driver — customers who received wrong or late orders rate satisfaction 40% lower on average. Connecting operational metrics to satisfaction scores reveals which failures matter most to customers.</div>
+            </div>
+            <div class="kpi-card" onclick="this.classList.toggle('open')">
+              <div class="kpi-icon">💰</div>
+              <div class="kpi-name">Cost-to-Serve</div>
+              <div class="kpi-formula">Total SC cost / Revenue generated</div>
+              <div class="kpi-short">What it costs to deliver service to a specific customer or segment.</div>
+              <div class="kpi-expand">Not all customers are equally profitable to serve. A customer who orders frequently in small quantities, requires customized packaging, and has strict delivery windows may cost twice as much to serve as a customer placing large, standard orders. Cost-to-serve analysis reveals which service promises are profitable and which are eroding margins.</div>
+            </div>
+          </div>
+          <div class="nav-row">
+            <button class="btn-nav" onclick="goSec('spectrum')">← Service Spectrum</button>
+            <button class="btn-nav primary" onclick="goSec('scenarios')">Service Failure Simulator →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ SCENARIOS ═══ -->
+      <div class="sec" id="sec-scenarios">
+        <div class="sc-wrap">
+          <div class="sc-tag reveal">Chapter 2 · Simulation</div>
+          <div class="sc-title reveal">Service Failure Simulator</div>
+          <div class="sc-lead reveal">What happens to your KPIs when service breaks down? Select a failure scenario and see the real impact on customer service metrics — and what it takes to recover.</div>
+          <div class="scenario-wrap reveal">
+            <div class="scenario-header">
+              <h3>⚡ Select a Service Failure Scenario</h3>
+              <span style="font-size:.75rem;color:var(--gray2)">Based on real industry events</span>
+            </div>
+            <div class="scenario-body">
+              <div class="scenario-left">
+                <div class="sc-scenario-label">Failure Events</div>
+                <button class="scenario-btn active" id="scen-btn-normal" onclick="setScenario('normal')">✓ Normal Operations — Baseline</button>
+                <button class="scenario-btn" id="scen-btn-stockout" onclick="setScenario('stockout')">📦 Major Stockout — 3 key SKUs OOS</button>
+                <button class="scenario-btn" id="scen-btn-late" onclick="setScenario('late')">🚚 Carrier Strike — All shipments delayed</button>
+                <button class="scenario-btn" id="scen-btn-wrong" onclick="setScenario('wrong')">❌ WMS Error — 8% of orders incorrect</button>
+                <button class="scenario-btn" id="scen-btn-damage" onclick="setScenario('damage')">💔 Cold Chain Failure — Product damaged</button>
+                <button class="scenario-btn" id="scen-btn-returns" onclick="setScenario('returns')">↩️ Returns Surge — 3× normal volume</button>
+              </div>
+              <div class="scenario-right">
+                <div class="sc-scenario-label">Live KPI Impact</div>
+                <div class="outcome-grid" id="outcome-grid"></div>
+                <div class="scenario-explain" id="scenario-explain">All systems operating normally. Baseline performance shown above.</div>
+              </div>
+            </div>
+          </div>
+          <div class="nav-row">
+            <button class="btn-nav" onclick="goSec('kpis')">← Metrics & KPIs</button>
+            <button class="btn-nav primary" onclick="goSec('satisfaction')">Satisfaction Model →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ SATISFACTION MODEL ═══ -->
+      <div class="sec" id="sec-satisfaction">
+        <div class="sc-wrap">
+          <div class="sc-tag reveal">Chapter 2 · The Model</div>
+          <div class="sc-title reveal">The Customer Satisfaction Model</div>
+          <div class="sc-lead reveal">Customer satisfaction is not just about meeting expectations — it is about the gap between what customers expect and what they receive. This animated model shows how that gap works and what drives it.</div>
+          <div class="model-canvas-wrap reveal">
+            <canvas id="model-canvas" height="320"></canvas>
+          </div>
+          <div class="def-card reveal" style="border-left-color:var(--purple)">
+            <div class="dc-label" style="color:var(--purple2)">The Expectation Gap</div>
+            <div class="dc-text"><strong>Satisfaction = Perceived Performance − Expectations</strong>. If a customer expects 3-day delivery and receives it in 2 days, they are delighted. If they expect 2-day delivery and receive it in 3 days, they are dissatisfied — even though the physical delivery time is the same. Managing <strong>expectations</strong> is therefore as important as managing <strong>performance</strong>. Companies that overpromise and underdeliver destroy customer relationships faster than companies that underpromise and overdeliver.</div>
+          </div>
+          <div class="def-card reveal" style="border-left-color:var(--green)">
+            <div class="dc-label" style="color:var(--green2)">Supply Chain Implications</div>
+            <div class="dc-text">Every customer touchpoint in the supply chain either creates or erodes satisfaction: <strong>order confirmation</strong> (sets expectations), <strong>shipment notification</strong> (manages anticipation), <strong>on-time delivery</strong> (delivers the promise), <strong>product condition</strong> (confirms quality), and <strong>returns experience</strong> (defines the relationship after a problem). Supply chain professionals who understand this model design systems — not just processes.</div>
+          </div>
+          <div class="nav-row">
+            <button class="btn-nav" onclick="goSec('scenarios')">← Service Failure Simulator</button>
+            <button class="btn-nav primary" onclick="goSec('quiz')">Check Your Understanding →</button>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- ═══ CUSTOMER SEGMENTATION TOOL ═══ -->
+      <div class="sec" id="sec-segment">
+        <div class="sc-wrap">
+          <div class="sc-tag reveal">Chapter 2 · Job-Ready Tool</div>
+          <div class="sc-title reveal">Customer Segmentation Tool</div>
+          <div class="sc-lead reveal">Real companies segment customers into service tiers — not everyone gets the same fill rate, lead time, or flexibility. Below are 8 customers with different profiles. Drag each one into the service tier that best fits their value and requirements. The tool calculates the cost-to-serve implications of your decisions.</div>
+
+          <div class="def-card reveal" style="border-left-color:var(--purple)">
+            <div class="dc-label" style="color:var(--purple2)">Why This Skill Is Valued in Industry</div>
+            <div class="dc-text">Large consumer goods companies use customer segmentation to decide who gets <strong>99% fill rate</strong> and dedicated account teams versus who gets <strong>standard service</strong>. Analysts who can build and defend a segmentation model — with cost-to-serve data — are sought after in supply chain planning, sales operations, and key account management roles.</div>
+          </div>
+
+          <!-- Tier Definitions -->
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.7rem;margin-bottom:1.5rem" class="reveal">
+            <div style="background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.25);border-radius:10px;padding:.9rem;text-align:center">
+              <div style="font-size:.75rem;font-weight:700;color:#f87171;letter-spacing:.06em;text-transform:uppercase;margin-bottom:.3rem">PREMIUM TIER</div>
+              <div style="font-size:.75rem;color:var(--gray3);line-height:1.5">98%+ fill rate · 24hr OCT · Dedicated rep · Custom packaging · Full flexibility</div>
+              <div id="drop-premium" class="seg-drop-zone" ondragover="allowDrop(event)" ondrop="dropCustomer(event,'premium')" style="min-height:80px;margin-top:.7rem;border:1.5px dashed rgba(239,68,68,.3);border-radius:7px;padding:.4rem;display:flex;flex-wrap:wrap;gap:.3rem;align-content:flex-start"></div>
+            </div>
+            <div style="background:rgba(201,168,76,.06);border:1px solid rgba(201,168,76,.25);border-radius:10px;padding:.9rem;text-align:center">
+              <div style="font-size:.75rem;font-weight:700;color:var(--gold);letter-spacing:.06em;text-transform:uppercase;margin-bottom:.3rem">STANDARD TIER</div>
+              <div style="font-size:.75rem;color:var(--gray3);line-height:1.5">95% fill rate · 3-5 day OCT · Shared service team · Standard packaging</div>
+              <div id="drop-standard" class="seg-drop-zone" ondragover="allowDrop(event)" ondrop="dropCustomer(event,'standard')" style="min-height:80px;margin-top:.7rem;border:1.5px dashed rgba(201,168,76,.3);border-radius:7px;padding:.4rem;display:flex;flex-wrap:wrap;gap:.3rem;align-content:flex-start"></div>
+            </div>
+            <div style="background:rgba(59,130,246,.06);border:1px solid rgba(59,130,246,.25);border-radius:10px;padding:.9rem;text-align:center">
+              <div style="font-size:.75rem;font-weight:700;color:var(--blue2);letter-spacing:.06em;text-transform:uppercase;margin-bottom:.3rem">BASIC TIER</div>
+              <div style="font-size:.75rem;color:var(--gray3);line-height:1.5">90% fill rate · 5-7 day OCT · Self-service portal · Minimal flexibility</div>
+              <div id="drop-basic" class="seg-drop-zone" ondragover="allowDrop(event)" ondrop="dropCustomer(event,'basic')" style="min-height:80px;margin-top:.7rem;border:1.5px dashed rgba(59,130,246,.3);border-radius:7px;padding:.4rem;display:flex;flex-wrap:wrap;gap:.3rem;align-content:flex-start"></div>
+            </div>
+          </div>
+
+          <!-- Customer Cards Pool -->
+          <div style="font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gray2);margin-bottom:.6rem" class="reveal">Drag these customers into a tier ↑</div>
+          <div id="customer-pool" class="reveal" style="display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1.2rem;min-height:60px;padding:.5rem;background:var(--bg3);border:1px solid var(--border);border-radius:10px"></div>
+
+          <!-- Cost-to-Serve Results -->
+          <div id="seg-results" class="reveal" style="display:none;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1.2rem;margin-bottom:1.2rem">
+            <div style="font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--green2);margin-bottom:.8rem">Cost-to-Serve Analysis</div>
+            <div id="seg-results-body"></div>
+          </div>
+
+          <!-- Justification -->
+          <div class="reveal" id="seg-justify-wrap" style="display:none">
+            <div style="font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gray2);margin-bottom:.5rem">Justify your segmentation (required for submission)</div>
+            <textarea id="seg-justify" style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:.75rem 1rem;color:var(--white);font-family:var(--font-b);font-size:.85rem;resize:vertical;min-height:100px;outline:none;line-height:1.6" placeholder="Explain your rationale. Which customer attributes drove your tier decisions? What tradeoffs did you make?"></textarea>
+            <div style="display:flex;justify-content:flex-end;margin-top:.7rem;gap:.7rem;align-items:center">
+              <span id="seg-saved" style="display:none;font-size:.78rem;color:var(--green2)">✓ Saved</span>
+              <button onclick="saveSegmentation()" style="background:var(--gold);color:var(--bg);font-weight:700;font-size:.82rem;border:none;border-radius:7px;padding:.55rem 1.3rem;cursor:pointer">Save Segmentation</button>
+            </div>
+          </div>
+
+          <div class="nav-row">
+            <button class="btn-nav" onclick="goSec('satisfaction')">← Satisfaction Model</button>
+            <button class="btn-nav primary" onclick="goSec('sla')">Health Diagnostic →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ BUSINESS HEALTH DIAGNOSTIC ═══ -->
+      <div class="sec" id="sec-sla">
+        <div class="sc-wrap">
+          <div class="sc-tag reveal">Chapter 2 · Job-Ready Tool</div>
+          <div class="sc-title reveal">Supply Chain Health Diagnostic</div>
+          <div class="sc-lead reveal">You are a supply chain analyst. A company has just shared its performance numbers with you. Your job: diagnose what is wrong, explain what it is costing them, and recommend what to fix first. This is exactly what analysts do in real roles.</div>
+
+          <div class="def-card reveal" style="border-left-color:var(--purple)">
+            <div class="dc-label" style="color:var(--purple2)">Why This Is a Job-Market Skill</div>
+            <div class="dc-text">In interviews for supply chain roles, candidates are often given a dataset and asked: <strong>"What do you see? What would you fix?"</strong> Major companies in retail, logistics, and healthcare run case interviews exactly like this. Being able to read performance numbers, connect them to business impact, and propose a prioritized improvement plan is one of the most valued skills in supply chain management.</div>
+          </div>
+
+          <!-- Company Selector -->
+          <div class="reveal" style="margin-bottom:1.2rem">
+            <div style="font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gray2);margin-bottom:.6rem">Choose a company scenario to diagnose</div>
+            <div style="display:flex;gap:.5rem;flex-wrap:wrap" id="company-selector"></div>
+          </div>
+
+          <!-- Company Profile -->
+          <div id="company-profile" class="reveal" style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-bottom:1.2rem"></div>
+
+          <!-- Performance Dashboard -->
+          <div id="perf-dashboard" class="reveal" style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:1.2rem;display:none">
+            <div style="padding:.8rem 1.2rem;border-bottom:1px solid var(--border);background:var(--bg3);font-size:.78rem;font-weight:600;color:var(--white)">Current Performance Numbers</div>
+            <div id="perf-metrics" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:0"></div>
+          </div>
+
+          <!-- Diagnosis Questions -->
+          <div id="diagnosis-area" class="reveal" style="display:none">
+            <div style="font-size:.78rem;font-weight:600;color:var(--white);margin-bottom:1rem">Now answer these three questions as the analyst:</div>
+
+            <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1.2rem;margin-bottom:.8rem">
+              <div style="font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--blue2);margin-bottom:.5rem">Question 1 — What is the most critical problem?</div>
+              <div style="font-size:.85rem;font-weight:500;color:var(--white);margin-bottom:.7rem" id="diag-q1">Which metric is most concerning and why?</div>
+              <textarea id="diag-a1" style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:7px;padding:.7rem .9rem;color:var(--white);font-family:var(--font-b);font-size:.83rem;resize:vertical;min-height:75px;outline:none;line-height:1.6" placeholder="Identify the worst-performing metric and explain what it tells you about the business..."></textarea>
+            </div>
+
+            <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1.2rem;margin-bottom:.8rem">
+              <div style="font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--amber2);margin-bottom:.5rem">Question 2 — What is it costing the business?</div>
+              <div style="font-size:.85rem;font-weight:500;color:var(--white);margin-bottom:.7rem" id="diag-q2">Estimate the financial impact of the performance gaps.</div>
+              <div id="diag-hint" style="font-size:.78rem;color:var(--gray2);background:var(--bg3);border-radius:6px;padding:.6rem .8rem;margin-bottom:.6rem;line-height:1.6"></div>
+              <textarea id="diag-a2" style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:7px;padding:.7rem .9rem;color:var(--white);font-family:var(--font-b);font-size:.83rem;resize:vertical;min-height:75px;outline:none;line-height:1.6" placeholder="Use the cost hints above. What revenue is at risk? What extra costs are being incurred?"></textarea>
+            </div>
+
+            <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1.2rem;margin-bottom:1.2rem">
+              <div style="font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--green2);margin-bottom:.5rem">Question 3 — What would you fix first?</div>
+              <div style="font-size:.85rem;font-weight:500;color:var(--white);margin-bottom:.7rem">Prioritize your recommendations. What action would you take in the first 30 days?</div>
+              <textarea id="diag-a3" style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:7px;padding:.7rem .9rem;color:var(--white);font-family:var(--font-b);font-size:.83rem;resize:vertical;min-height:75px;outline:none;line-height:1.6" placeholder="Name one specific action, who is responsible, and what metric it improves..."></textarea>
+            </div>
+
+            <!-- Reveal Model Answer -->
+            <div style="display:flex;align-items:center;gap:.8rem;margin-bottom:1.2rem;flex-wrap:wrap">
+              <button onclick="revealAnswer()" style="background:var(--bg3);color:var(--gray3);font-weight:600;font-size:.82rem;border:1px solid var(--border);border-radius:7px;padding:.55rem 1.1rem;cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor='var(--border2)'" onmouseout="this.style.borderColor='var(--border)'">Show Expert Analysis</button>
+              <button onclick="saveDiagnosis()" style="background:var(--gold);color:var(--bg);font-weight:700;font-size:.82rem;border:none;border-radius:7px;padding:.55rem 1.3rem;cursor:pointer">Save My Analysis</button>
+              <span id="diag-saved" style="display:none;font-size:.78rem;color:var(--green2)">✓ Saved</span>
+            </div>
+
+            <!-- Expert Analysis (hidden until revealed) -->
+            <div id="expert-analysis" style="display:none;background:var(--bg2);border:1px solid rgba(16,185,129,.25);border-left:3px solid var(--green);border-radius:10px;padding:1.2rem;margin-bottom:1.2rem">
+              <div style="font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--green2);margin-bottom:.7rem">Expert Analysis</div>
+              <div id="expert-text" style="font-size:.83rem;color:var(--gray3);line-height:1.8"></div>
+            </div>
+          </div>
+
+          <div class="nav-row">
+            <button class="btn-nav" onclick="goSec('segment')">← Customer Segmentation</button>
+            <button class="btn-nav primary" onclick="goSec('practical1')">Real‑World Applications →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ REAL-WORLD APPLICATION ═══ -->
+      <div class="sec" id="sec-practical1">
+        <div class="sc-wrap">
+          <div class="sc-tag reveal">Chapter 2 · Application Session</div>
+          <div class="sc-title reveal">Real‑World Application: Diagnosing & Improving Customer Service</div>
+          <div class="sc-lead reveal">Apply the metrics and tools you learned to a real company case. As a supply chain analyst, you'll interpret data, diagnose problems and develop an action plan.</div>
+
+          <div class="def-card reveal" style="border-left-color:var(--purple)">
+            <div class="dc-label" style="color:var(--purple2)">Why This Matters</div>
+            <div class="dc-text">Businesses often misunderstand customer needs or segment customers poorly, leading to unnecessary costs and lost revenue. Analysts who can read performance numbers and link them to business impact are highly sought after.</div>
+          </div>
+
+          <div class="def-card reveal" style="border-left-color:var(--blue)">
+            <div class="dc-label" style="color:var(--blue2)">Hands‑On Tasks</div>
+            <div class="dc-text">
+              <ul style="margin-left:1rem;list-style-type:disc">
+                <li>Examine a company's delivery performance metrics (on‑time delivery, fill rate, order accuracy).</li>
+                <li>Identify the most critical performance gap and explain why it matters.</li>
+                <li>Estimate the financial impact by considering revenue at risk and cost‑to‑serve (remember that 10–30% of customers/orders are often unprofitable).</li>
+                <li>Draft a 30‑day improvement plan targeting the largest gap. Specify actions, who is responsible and which metric will improve.</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="def-card reveal" style="border-left-color:var(--green)">
+            <div class="dc-label" style="color:var(--green2)">Key Metrics to Track</div>
+            <div class="dc-text">
+              <table style="width:100%;border-collapse:collapse;font-size:.78rem;color:var(--gray3)">
+                <tr>
+                  <th style="text-align:left;padding:.3rem .5rem;border-bottom:1px solid var(--border)">Metric</th>
+                  <th style="text-align:left;padding:.3rem .5rem;border-bottom:1px solid var(--border)">What it measures</th>
+                  <th style="text-align:left;padding:.3rem .5rem;border-bottom:1px solid var(--border)">Why it matters</th>
+                </tr>
+                <tr>
+                  <td style="padding:.4rem .5rem;border-bottom:1px solid var(--bg3)">On‑Time Delivery (OTD)</td>
+                  <td style="padding:.4rem .5rem;border-bottom:1px solid var(--bg3)">% of orders delivered by the promised date</td>
+                  <td style="padding:.4rem .5rem;border-bottom:1px solid var(--bg3)">Sets customer expectations and is critical for satisfaction</td>
+                </tr>
+                <tr>
+                  <td style="padding:.4rem .5rem;border-bottom:1px solid var(--bg3)">Fill Rate</td>
+                  <td style="padding:.4rem .5rem;border-bottom:1px solid var(--bg3)">% of order quantity fulfilled without backorders</td>
+                  <td style="padding:.4rem .5rem;border-bottom:1px solid var(--bg3)">High fill rates reduce stockouts and enhance loyalty</td>
+                </tr>
+                <tr>
+                  <td style="padding:.4rem .5rem;border-bottom:1px solid var(--bg3)">Order Accuracy</td>
+                  <td style="padding:.4rem .5rem;border-bottom:1px solid var(--bg3)">Orders delivered correctly and without damage</td>
+                  <td style="padding:.4rem .5rem;border-bottom:1px solid var(--bg3)">Minimizes returns and complaints</td>
+                </tr>
+                <tr>
+                  <td style="padding:.4rem .5rem">Cost‑to‑Serve (CTS)</td>
+                  <td style="padding:.4rem .5rem">Total cost incurred to fulfill an order</td>
+                  <td style="padding:.4rem .5rem">Helps identify unprofitable customers or orders</td>
+                </tr>
+              </table>
+            </div>
+          </div>
+
+          <div class="nav-row">
+            <button class="btn-nav" onclick="goSec('sla')">← Supply Chain Health Diagnostic</button>
+            <button class="btn-nav primary" onclick="goSec('practical2')">Entrepreneurship & Small Business →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ SMALL BUSINESS APPLICATION ═══ -->
+      <div class="sec" id="sec-practical2">
+        <div class="sc-wrap">
+          <div class="sc-tag reveal">Chapter 2 · Application Session</div>
+          <div class="sc-title reveal">Entrepreneurship & Small Business: Designing Your Customer Service</div>
+          <div class="sc-lead reveal">If you start your own business, your service promise will shape customer loyalty. Learn to define service levels, use data to track performance and improve continuously.</div>
+
+          <div class="def-card reveal" style="border-left-color:var(--purple)">
+            <div class="dc-label" style="color:var(--purple2)">Why This Matters</div>
+            <div class="dc-text">Small firms often over‑service or under‑service customers because they don’t understand customer needs. Setting clear service policies and measuring performance helps you align costs with customer value.</div>
+          </div>
+
+          <div class="def-card reveal" style="border-left-color:var(--blue)">
+            <div class="dc-label" style="color:var(--blue2)">Hands‑On Tasks</div>
+            <div class="dc-text">
+              <ul style="margin-left:1rem;list-style-type:disc">
+                <li>Draft a service policy for your business: define promised lead times, return handling and communication cadence.</li>
+                <li>Track simple KPIs like on‑time delivery, order accuracy and customer satisfaction for one week.</li>
+                <li>Collect customer feedback and adjust your service levels. Avoid over‑servicing by offering appropriate tiers.</li>
+                <li>Explore low‑cost tools (e‑commerce platforms, CRM, parcel tracking) to provide real‑time updates and automate communication.</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="def-card reveal" style="border-left-color:var(--green)">
+            <div class="dc-label" style="color:var(--green2)">Key Metrics for Small Businesses</div>
+            <div class="dc-text">
+              <table style="width:100%;border-collapse:collapse;font-size:.78rem;color:var(--gray3)">
+                <tr>
+                  <th style="text-align:left;padding:.3rem .5rem;border-bottom:1px solid var(--border)">Metric</th>
+                  <th style="text-align:left;padding:.3rem .5rem;border-bottom:1px solid var(--border)">What it measures</th>
+                  <th style="text-align:left;padding:.3rem .5rem;border-bottom:1px solid var(--border)">How to use it</th>
+                </tr>
+                <tr>
+                  <td style="padding:.4rem .5rem;border-bottom:1px solid var(--bg3)">On‑Time Delivery</td>
+                  <td style="padding:.4rem .5rem;border-bottom:1px solid var(--bg3)">Orders arriving by promised date</td>
+                  <td style="padding:.4rem .5rem;border-bottom:1px solid var(--bg3)">Reveals whether you are meeting promises; adjust routes or inventory accordingly</td>
+                </tr>
+                <tr>
+                  <td style="padding:.4rem .5rem;border-bottom:1px solid var(--bg3)">Order Accuracy</td>
+                  <td style="padding:.4rem .5rem;border-bottom:1px solid var(--bg3)">Correct items shipped and undamaged</td>
+                  <td style="padding:.4rem .5rem;border-bottom:1px solid var(--bg3)">Minimizes costly returns and refunds</td>
+                </tr>
+                <tr>
+                  <td style="padding:.4rem .5rem;border-bottom:1px solid var(--bg3)">Customer Satisfaction</td>
+                  <td style="padding:.4rem .5rem;border-bottom:1px solid var(--bg3)">Survey score or Net Promoter Score (NPS)</td>
+                  <td style="padding:.4rem .5rem;border-bottom:1px solid var(--bg3)">Guides improvement priorities; track before and after policy changes</td>
+                </tr>
+                <tr>
+                  <td style="padding:.4rem .5rem">Cost‑to‑Serve</td>
+                  <td style="padding:.4rem .5rem">Time, shipping and handling cost per order</td>
+                  <td style="padding:.4rem .5rem">Identifies unprofitable orders/customers; helps decide if you need tiers</td>
+                </tr>
+              </table>
+            </div>
+          </div>
+
+          <div class="nav-row">
+            <button class="btn-nav" onclick="goSec('practical1')">← Real‑World Application</button>
+            <button class="btn-nav primary" onclick="goSec('quiz')">Check Your Understanding →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ QUIZ ═══ -->
+      <div class="sec" id="sec-quiz">
+        <div class="sc-wrap">
+          <div class="sc-tag reveal">Chapter 2 · Assessment</div>
+          <div class="sc-title reveal">Check Your Understanding</div>
+          <div class="sc-lead reveal">Five questions drawn from the Chapter 2 question bank. You get a different set each attempt.</div>
+          <div id="quiz-area"></div>
+          <div id="quiz-complete" style="display:none">
+            <div class="def-card" style="border-left-color:var(--green);text-align:center;padding:2rem">
+              <div style="font-size:2rem;margin-bottom:.6rem">✓</div>
+              <div class="dc-label" style="color:var(--green2);text-align:center">Chapter 2 Complete</div>
+              <div class="dc-text" style="text-align:center;margin-top:.4rem">Score: <strong id="quiz-score" style="color:var(--white)">0/5</strong>. Your responses have been saved.</div>
+            </div>
+          </div>
+          <div class="nav-row">
+            <button class="btn-nav" onclick="goSec('satisfaction')">← Satisfaction Model</button>
+            <button class="btn-nav primary" id="btn-to-ch3" onclick="notify('Coming soon','Chapter 3 will be available soon.','warn')" style="opacity:.5">Chapter 3 →</button>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /content-area -->
+  </div><!-- /main-layout -->
+</div><!-- /shell -->
+<div class="notif" id="notif"><div class="nt" id="nt-t"></div><div class="nb" id="nt-b"></div></div>
+<script>
+// ══════ STATE ══════
+let ST={name:'',id:'',visited:new Set(['hero']),quizScore:0,quizAnswers:{}};
+const SEC_ORDER=['hero','what','elements','spectrum','kpis','scenarios','satisfaction','segment','sla','quiz'];
+let specView='cost';
+let activeScenario='normal';
+let modelTick=0;
+let modelRaf=null;
+
+// ══════ LOGIN ══════
+function initials(n){return n.trim().split(' ').map(w=>w[0]||'').join('').toUpperCase().slice(0,2)||'?'}
+function avColor(n){const c=['#3b82f6','#c9a84c','#10b981','#ef4444','#8b5cf6','#f97316'];let h=0;for(let i=0;i<n.length;i++)h=(Math.imul(31,h)+n.charCodeAt(i))|0;return c[Math.abs(h)%c.length]}
+
+function doLogin(){
+  const name=document.getElementById('inp-name').value.trim();
+  const id=document.getElementById('inp-id').value.trim();
+  if(!name||!id){notify('Missing info','Enter your full name and student ID.','warn');return}
+  ST.name=name;ST.id=id;
+  document.getElementById('hdr-av').textContent=initials(name);
+  document.getElementById('hdr-av').style.background=avColor(name);
+  document.getElementById('hdr-nm').textContent=name;
+  document.getElementById('login-overlay').style.display='none';
+  loadSaved();
+  setTimeout(()=>{initSpectrum();renderOutcomes(SCENARIOS.normal);},100);
+  notify('Welcome back','Chapter 2 is ready.');
+}
+
+// ══════ NAVIGATION ══════
+function goSec(id){
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(b=>b.classList.remove('active'));
+  document.getElementById('sec-'+id).classList.add('active');
+  document.getElementById('sb-'+id).classList.add('active');
+  document.getElementById('content-area').scrollTop=0;
+  ST.visited.add(id);
+  updateProgress();
+  setTimeout(()=>{
+    revealElements();
+    if(id==='spectrum')initSpectrum();
+    if(id==='satisfaction')initModel();
+    if(id==='quiz'){qIdx=0;ST.quizScore=0;shuffleQ();buildQuiz();}
+    if(id==='segment'){setTimeout(()=>{initSegmentation();loadSegState();},80);}
+    if(id==='sla'){setTimeout(()=>{initDiagnostic();},80);}
+  },80);
+  saveState();
+}
+function updateProgress(){
+  const pct=Math.round((ST.visited.size/SEC_ORDER.length)*100);
+  document.getElementById('prog-pct').textContent=pct+'%';
+  document.getElementById('prog-fill').style.width=pct+'%';
+}
+function revealElements(){
+  document.querySelectorAll('.reveal').forEach((el,i)=>{setTimeout(()=>el.classList.add('visible'),i*70)});
+}
+
+// ══════ SPECTRUM CHART ══════
+function initSpectrum(){
+  const c=document.getElementById('spectrum-canvas');
+  if(!c)return;
+  c.width=c.parentElement.clientWidth||700;
+  drawSpectrum();
+}
+function setSpecView(v){
+  specView=v;
+  ['cost','revenue','profit'].forEach(x=>{
+    const b=document.getElementById('spec-btn-'+x);
+    if(b)b.classList.toggle('active',x===v);
+  });
+  drawSpectrum();
+}
+function drawSpectrum(){
+  const c=document.getElementById('spectrum-canvas');
+  if(!c)return;
+  const ctx=c.getContext('2d');
+  const W=c.width,H=c.height;
+  const PAD={l:60,r:30,t:30,b:50};
+  const CW=W-PAD.l-PAD.r,CH=H-PAD.t-PAD.b;
+  ctx.clearRect(0,0,W,H);
+
+  // Background
+  ctx.fillStyle='#07090e';ctx.fillRect(0,0,W,H);
+
+  // Grid lines
+  ctx.strokeStyle='rgba(255,255,255,.04)';ctx.lineWidth=1;
+  for(let i=0;i<=5;i++){
+    const y=PAD.t+CH*(1-i/5);
+    ctx.beginPath();ctx.moveTo(PAD.l,y);ctx.lineTo(PAD.l+CW,y);ctx.stroke();
+  }
+  for(let i=0;i<=10;i++){
+    const x=PAD.l+CW*(i/10);
+    ctx.beginPath();ctx.moveTo(x,PAD.t);ctx.lineTo(x,PAD.t+CH);ctx.stroke();
+  }
+
+  // Axes
+  ctx.strokeStyle='rgba(255,255,255,.15)';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(PAD.l,PAD.t);ctx.lineTo(PAD.l,PAD.t+CH);ctx.lineTo(PAD.l+CW,PAD.t+CH);ctx.stroke();
+
+  // X axis labels (service level %)
+  ctx.fillStyle='#6b849e';ctx.font='500 10px system-ui,sans-serif';ctx.textAlign='center';ctx.textBaseline='top';
+  [0,50,60,70,80,90,95,99,100].forEach(v=>{
+    const x=PAD.l+CW*(v/100);
+    ctx.fillText(v+'%',x,PAD.t+CH+8);
+  });
+  ctx.save();ctx.translate(PAD.l-40,PAD.t+CH/2);ctx.rotate(-Math.PI/2);ctx.fillText('Value / Cost',0,0);ctx.restore();
+  ctx.textAlign='center';ctx.fillText('Service Level',PAD.l+CW/2,PAD.t+CH+30);
+
+  // Draw curves
+  function drawCurve(fn,color,label,dash){
+    ctx.beginPath();ctx.setLineDash(dash||[]);
+    for(let i=0;i<=200;i++){
+      const sl=i/200;
+      const y=PAD.t+CH*(1-fn(sl));
+      if(i===0)ctx.moveTo(PAD.l+CW*sl,y);
+      else ctx.lineTo(PAD.l+CW*sl,y);
+    }
+    ctx.strokeStyle=color;ctx.lineWidth=2.5;ctx.stroke();ctx.setLineDash([]);
+    // label at right end
+    const endY=PAD.t+CH*(1-fn(1));
+    ctx.fillStyle=color;ctx.font='600 11px system-ui,sans-serif';ctx.textAlign='left';ctx.textBaseline='middle';
+    ctx.fillText(label,PAD.l+CW+4,endY);
+  }
+
+  if(specView==='cost'){
+    // Cost curve: exponential - cheap to go from 80-90%, very expensive to go 95-100%
+    drawCurve(sl=>Math.min(.95,Math.pow(sl,2.5)*.95+sl*.05),'#ef4444','Cost');
+  } else if(specView==='revenue'){
+    // Revenue curve: S-curve, saturates near 100%
+    drawCurve(sl=>{const x=sl*12-6;return 1/(1+Math.exp(-x))*.85+sl*.05;},'#10b981','Revenue');
+  } else {
+    // Profit = revenue - cost
+    drawCurve(sl=>{const rev=1/(1+Math.exp(-(sl*12-6)))*.85+sl*.05;const cost=Math.min(.95,Math.pow(sl,2.5)*.95+sl*.05);return Math.max(0,Math.min(1,(rev-cost+.4)*.8));},'#c9a84c','Profit',[]);
+    drawCurve(sl=>{const x=sl*12-6;return 1/(1+Math.exp(-x))*.85+sl*.05;},'#10b981','Revenue',[4,3]);
+    drawCurve(sl=>Math.min(.95,Math.pow(sl,2.5)*.95+sl*.05),'#ef4444','Cost',[4,3]);
+    // Optimal point annotation
+    ctx.beginPath();ctx.arc(PAD.l+CW*.78,PAD.t+CH*.38,5,0,Math.PI*2);
+    ctx.fillStyle='#c9a84c';ctx.fill();
+    ctx.fillStyle='#c9a84c';ctx.font='600 10px system-ui,sans-serif';ctx.textAlign='center';ctx.textBaseline='bottom';
+    ctx.fillText('Optimal ~92%',PAD.l+CW*.78,PAD.t+CH*.38-8);
+  }
+}
+
+// ══════ SCENARIO SIMULATOR ══════
+const SCENARIOS={
+  normal:{fill:96,oct:3.2,por:92,otd:97,sat:88,explain:"All systems operating normally. These are typical best-in-class baseline metrics for a consumer goods company."},
+  stockout:{fill:71,oct:5.8,por:67,otd:82,sat:54,explain:"3 key SKUs go out of stock simultaneously. Fill rate collapses. OCT extends as backorders accumulate. Perfect order rate and customer satisfaction take an immediate, severe hit. Recovery requires 2-3 weeks of expedited replenishment."},
+  late:{fill:94,oct:8.4,por:61,otd:43,sat:49,explain:"A carrier strike delays all outbound shipments. Fill rate holds but OTD collapses to 43%. Perfect order rate falls as even complete, accurate orders miss delivery windows. Customers begin placing orders with competitors."},
+  wrong:{fill:94,oct:3.3,por:74,otd:96,sat:61,explain:"A WMS configuration error causes 8% of orders to ship with incorrect items. Fill rate appears normal but perfect order rate falls sharply. Returns surge. Correcting every mis-shipped order costs 5-7x the original order processing cost."},
+  damage:{fill:91,oct:3.5,por:68,otd:94,sat:52,explain:"Cold chain failure damages temperature-sensitive product in transit. Fill rate falls as damaged units cannot be sold. Satisfaction crashes — a customer receiving damaged goods is more dissatisfied than a customer receiving nothing, because expectations were set and then violated."},
+  returns:{fill:94,oct:4.8,por:79,otd:88,sat:71,explain:"Returns volume triples due to a product issue. Returns processing capacity is overwhelmed, extending OCT for new orders as warehouse staff are diverted. OTD falls. Cost-to-serve increases sharply for the affected period."},
+};
+function setScenario(id){
+  activeScenario=id;
+  document.querySelectorAll('.scenario-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('scen-btn-'+id).classList.add('active');
+  renderOutcomes(SCENARIOS[id]);
+}
+function renderOutcomes(s){
+  const grid=document.getElementById('outcome-grid');
+  if(!grid)return;
+  function cls(v,good,warn){return v>=good?'good':v>=warn?'warn':'bad'}
+  grid.innerHTML=[
+    {label:'Fill Rate',val:s.fill+'%',c:cls(s.fill,92,82)},
+    {label:'Ord Cycle (days)',val:s.oct+'d',c:s.oct<=4?'good':s.oct<=6?'warn':'bad'},
+    {label:'Perfect Order',val:s.por+'%',c:cls(s.por,88,75)},
+    {label:'On-Time Del.',val:s.otd+'%',c:cls(s.otd,92,80)},
+  ].map(m=>`<div class="outcome-card ${m.c}"><span class="outcome-val">${m.val}</span><div class="outcome-lbl">${m.label}</div></div>`).join('');
+  document.getElementById('scenario-explain').textContent=s.explain;
+}
+
+// ══════ SATISFACTION MODEL CANVAS ══════
+function initModel(){
+  const c=document.getElementById('model-canvas');
+  if(!c)return;
+  c.width=c.parentElement.clientWidth||700;
+  modelTick=0;
+  if(modelRaf)cancelAnimationFrame(modelRaf);
+  animateModel();
+}
+function animateModel(){
+  const c=document.getElementById('model-canvas');
+  if(!c||!document.getElementById('sec-satisfaction').classList.contains('active')){modelRaf=null;return}
+  const ctx=c.getContext('2d');
+  const W=c.width,H=c.height;
+  modelTick++;
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#07090e';ctx.fillRect(0,0,W,H);
+
+  const cx=W/2,cy=H/2;
+
+  // Three scenarios side by side
+  const scenarios=[
+    {label:'Delighted',sub:'Perf > Expectation',perfY:.25,expY:.55,color:'#10b981'},
+    {label:'Satisfied',sub:'Perf = Expectation',perfY:.45,expY:.45,color:'#c9a84c'},
+    {label:'Dissatisfied',sub:'Perf < Expectation',perfY:.68,expY:.3,color:'#ef4444'},
+  ];
+  const colW=W/3;
+  scenarios.forEach((s,i)=>{
+    const x=colW*i+colW/2;
+    const pulse=0.5+0.5*Math.sin(modelTick*.04+i*2);
+
+    // Column bg
+    ctx.fillStyle=s.color+'08';
+    ctx.fillRect(colW*i+8,8,colW-16,H-16);
+    ctx.strokeStyle=s.color+'20';ctx.lineWidth=1;
+    ctx.strokeRect(colW*i+8,8,colW-16,H-16);
+
+    // Title
+    ctx.fillStyle=s.color;ctx.font='700 13px system-ui,sans-serif';ctx.textAlign='center';ctx.textBaseline='top';
+    ctx.fillText(s.label,x,20);
+    ctx.fillStyle='#6b849e';ctx.font='400 10px system-ui,sans-serif';
+    ctx.fillText(s.sub,x,38);
+
+    // Expectation bar (what customer expects)
+    const expY=H*s.expY;
+    const barW=colW*0.55;
+    ctx.fillStyle='rgba(59,130,246,.15)';
+    ctx.fillRect(x-barW/2,expY-12,barW,24);
+    ctx.strokeStyle='#3b82f6';ctx.lineWidth=1.5;
+    ctx.strokeRect(x-barW/2,expY-12,barW,24);
+    ctx.fillStyle='#60a5fa';ctx.font='600 10px system-ui,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText('Expected',x,expY);
+
+    // Performance bar (what they actually get)
+    const perfY=H*s.perfY;
+    ctx.fillStyle=s.color+'25';
+    ctx.fillRect(x-barW/2,perfY-12,barW,24);
+    ctx.strokeStyle=s.color;ctx.lineWidth=1.5;
+    ctx.strokeRect(x-barW/2,perfY-12,barW,24);
+    ctx.fillStyle=s.color;ctx.font='600 10px system-ui,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText('Received',x,perfY);
+
+    // Gap arrow
+    const gapTop=Math.min(perfY,expY)+12;
+    const gapBot=Math.max(perfY,expY)-12;
+    if(gapBot>gapTop+5){
+      ctx.beginPath();ctx.moveTo(x,gapTop);ctx.lineTo(x,gapBot);
+      ctx.strokeStyle=s.color+'80';ctx.lineWidth=1.5;ctx.setLineDash([3,3]);ctx.stroke();ctx.setLineDash([]);
+    }
+
+    // Gap label
+    const gapMid=(perfY+expY)/2;
+    const gapLabel=i===0?'+ Gap = Delight':i===1?'No Gap = Satisfied':'- Gap = Dissatisfied';
+    ctx.fillStyle=s.color;ctx.font='600 9px system-ui,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(gapLabel,x+barW/2+30,gapMid);
+  });
+
+  // Bottom label
+  ctx.fillStyle='#3d5470';ctx.font='400 10px system-ui,sans-serif';ctx.textAlign='center';ctx.textBaseline='bottom';
+  ctx.fillText('Satisfaction = Perceived Performance − Customer Expectations',W/2,H-6);
+
+  modelRaf=requestAnimationFrame(animateModel);
+}
+
+// ══════ QUESTION BANK ══════
+const QUESTION_BANK=[
+  {q:"According to Stock & Lambert, customer service is best described as:",opts:["A department that handles complaints and returns","A process for providing significant value-added benefits to the supply chain in a cost-effective way","The speed at which orders are processed","The accuracy of product descriptions on a company website"],correct:1,explain:"Stock & Lambert define customer service as a process — not a department or a single metric. It encompasses the entire system of outcomes a company delivers to customers, viewed through the lens of cost-effectiveness."},
+  {q:"Which of the following is a TRANSACTION element of customer service?",opts:["Written service policy","Product availability and order cycle time","Warranty and returns handling","Customer complaint resolution"],correct:1,explain:"Transaction elements occur during the fulfillment process: product availability, order cycle time, order status information, and shipment accuracy. Pre-transaction elements happen before the order; post-transaction elements happen after delivery."},
+  {q:"The Perfect Order Rate formula multiplies which four components?",opts:["Fill rate, order accuracy, transit time, and cost","On-time delivery, order completeness, order accuracy, and damage-free delivery","Fill rate, customer satisfaction, cycle time, and returns rate","Order frequency, unit volume, transit speed, and invoice accuracy"],correct:1,explain:"Perfect Order Rate = On-time delivery % x Complete % x Accurate % x Undamaged %. Because these are multiplied together, even small failures in each dimension compound — a company with 95% on each dimension achieves only 81.5% perfect order rate."},
+  {q:"Why is moving from 95% to 100% fill rate disproportionately expensive?",opts:["Because transportation costs increase at higher service levels","Because the last few percentage points require covering increasingly rare demand spikes requiring exponentially more safety stock","Because warehouse automation is required above 95%","Because customer satisfaction does not improve above 95%"],correct:1,explain:"Achieving high fill rates requires safety stock to cover demand variability. The last few percentage points cover increasingly rare, extreme demand events — requiring exponentially more inventory to buffer against them. This is why the cost curve for service level is exponential, not linear."},
+  {q:"Customer satisfaction in the expectation-gap model is defined as:",opts:["Total orders delivered on time divided by total orders placed","Perceived performance minus customer expectations","Revenue per customer divided by cost-to-serve","Net Promoter Score averaged across all customer segments"],correct:1,explain:"Satisfaction = Perceived Performance - Expectations. This is why companies can create delight by underpromising and overdelivering, and why overpromising — even when performance is good — creates dissatisfaction. Managing expectations is as strategically important as managing actual performance."},
+  {q:"What does Cost-to-Serve analysis reveal?",opts:["The total freight cost per shipment","Which customers or segments are actually profitable to serve given all the costs involved","The minimum service level required to retain a customer","How much it costs to resolve a customer complaint"],correct:1,explain:"Cost-to-Serve assigns all supply chain costs (order processing, picking, packaging, freight, returns) to specific customers or segments. It often reveals that some high-volume customers are actually unprofitable because of demanding service requirements, while smaller customers with standard service needs are highly profitable."},
+  {q:"Order Cycle Time consistency matters more than raw speed because:",opts:["Customers always prefer slower, more reliable delivery to faster, less reliable delivery","Customers can plan and manage their own inventory around a reliable cycle time; an unpredictable cycle time forces them to hold excess safety stock","Consistent OCT reduces transportation costs for the supplier","Regulatory requirements mandate delivery time consistency in most industries"],correct:1,explain:"A customer who reliably receives orders in 5 days can plan exactly how much safety stock to hold. A customer whose orders arrive anywhere from 2 to 8 days must hold enough safety stock to cover the worst case. OCT variability directly increases the customer's inventory costs and reduces their trust."},
+  {q:"Which customer segment most justifies a 99.9% fill rate target?",opts:["A seasonal gift retailer","A hospital ordering critical surgical supplies","A hardware store ordering paint","A restaurant ordering paper napkins"],correct:1,explain:"A hospital faces life-threatening consequences from stockouts of critical supplies. The cost of a stockout — delayed surgery, patient harm — far exceeds the cost of maintaining extremely high safety stock. Customer segmentation means matching service level investment to the actual consequences of failure for each customer."},
+  {q:"What is the primary strategic insight of the customer service spectrum?",opts:["Higher service levels always generate more revenue than they cost","There is an optimal service level where the marginal revenue from better service equals the marginal cost of providing it","Companies should minimize service levels to reduce supply chain costs","All customers should receive the same service level for fairness"],correct:1,explain:"The service spectrum shows that cost increases exponentially at high service levels while revenue gains diminish. The optimal point — usually 90-98% depending on industry — is where the profit from better service peaks. Beyond that point, the cost of incremental service improvement exceeds the revenue it generates."},
+  {q:"Returns management has become strategically important primarily because:",opts:["Government regulations now require free returns","E-commerce growth has made returns a major volume driver, and a frictionless returns experience is now a competitive differentiator","Returns are more profitable than forward logistics","Manufacturing defects have increased, making returns unavoidable"],correct:1,explain:"E-commerce return rates average 20-30%, making reverse logistics a major operational challenge. Leading e-commerce companies have turned easy returns into a competitive advantage — reducing purchase hesitation and converting uncertain buyers into loyal customers. A poor returns experience damages the relationship more than a delayed initial delivery."},
+];
+
+const QUESTIONS=[...QUESTION_BANK.slice(0,5)];
+let qIdx=0;
+
+function shuffleQ(){
+  const bank=[...QUESTION_BANK];
+  for(let i=bank.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[bank[i],bank[j]]=[bank[j],bank[i]];}
+  QUESTIONS.length=0;
+  bank.slice(0,5).forEach(q=>QUESTIONS.push(q));
+}
+
+function buildQuiz(){
+  const area=document.getElementById('quiz-area');
+  if(qIdx===0)ST.quizScore=0;
+  if(qIdx>=QUESTIONS.length){
+    area.innerHTML='';
+    document.getElementById('quiz-complete').style.display='block';
+    document.getElementById('quiz-score').textContent=ST.quizScore+'/'+QUESTIONS.length;
+    const b=document.getElementById('btn-to-ch3');
+    b.style.opacity='1';b.onclick=function(){notify('Coming soon','Chapter 3 will be available soon.','warn')};
+    saveState();return;
+  }
+  const q=QUESTIONS[qIdx];
+  area.innerHTML=`<div class="quiz-block">
+    <div style="font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:.6rem">Question ${qIdx+1} of ${QUESTIONS.length}</div>
+    <div class="quiz-q">${q.q}</div>
+    <div class="quiz-opts">${q.opts.map((o,i)=>`<button class="qopt" onclick="answerQ(${i})" id="qopt-${i}">${String.fromCharCode(65+i)}. ${o}</button>`).join('')}</div>
+    <div class="quiz-feedback" id="qfb"></div>
+    <button class="btn-next-q" id="btn-nq" onclick="nextQ()">Next Question →</button>
+  </div>`;
+}
+function answerQ(i){
+  const q=QUESTIONS[qIdx];
+  document.querySelectorAll('.qopt').forEach(b=>b.style.pointerEvents='none');
+  const ok=i===q.correct;
+  if(ok)ST.quizScore++;
+  document.getElementById('qopt-'+i).classList.add(ok?'correct':'wrong');
+  if(!ok)document.getElementById('qopt-'+q.correct).classList.add('show-correct');
+  const fb=document.getElementById('qfb');
+  fb.className='quiz-feedback show '+(ok?'good':'bad');
+  fb.innerHTML=(ok?'<strong>Correct.</strong> ':'<strong>Not quite.</strong> ')+q.explain;
+  document.getElementById('btn-nq').classList.add('show');
+  ST.quizAnswers[qIdx]={selected:i,correct:q.correct,isCorrect:ok};
+  saveState();
+}
+function nextQ(){qIdx++;buildQuiz();}
+
+// ══════ PERSISTENCE ══════
+function saveState(){
+  try{localStorage.setItem('scm1010_ch2_'+ST.id,JSON.stringify({visited:[...ST.visited],quizScore:ST.quizScore,quizAnswers:ST.quizAnswers}))}catch(e){}
+}
+function loadSaved(){
+  try{
+    const d=localStorage.getItem('scm1010_ch2_'+ST.id);
+    if(d){const p=JSON.parse(d);ST.visited=new Set(p.visited||['hero']);ST.quizScore=p.quizScore||0;ST.quizAnswers=p.quizAnswers||{};}
+  }catch(e){}
+  updateProgress();
+}
+
+
+// ══════════════════════════════════════════════
+// CUSTOMER SEGMENTATION TOOL
+// ══════════════════════════════════════════════
+const CUSTOMERS = [
+  {id:'c1', name:'ValuChain Retail', icon:'🏬', revenue:'$8.2M', orders:'Daily', reqs:'98% fill, 24hr OCT, EDI required', hint:'premium'},
+  {id:'c2', name:'Northside Medical', icon:'🏥', revenue:'$1.1M', orders:'Weekly', reqs:'99% fill on critical SKUs, cold chain', hint:'premium'},
+  {id:'c3', name:'FastLane Stores', icon:'⛽', revenue:'$340K', orders:'Bi-weekly', reqs:'Standard packaging, 5-day OCT', hint:'basic'},
+  {id:'c4', name:'FreshPath Markets', icon:'🛒', revenue:'$2.8M', orders:'3x/week', reqs:'95% fill, 3-day OCT, custom labels', hint:'standard'},
+  {id:'c5', name:'SwiftCart Online', icon:'💻', revenue:'$4.1M', orders:'Daily', reqs:'98% fill, same-day processing, returns portal', hint:'premium'},
+  {id:'c6', name:'NearBy Convenience', icon:'🏪', revenue:'$88K', orders:'Monthly', reqs:'Basic service, self-service portal fine', hint:'basic'},
+  {id:'c7', name:'PrimeLine Distributors', icon:'🚚', revenue:'$3.6M', orders:'Weekly', reqs:'95% fill, 4-day OCT, standard EDI', hint:'standard'},
+  {id:'c8', name:'Lakewood Schools', icon:'🎓', revenue:'$220K', orders:'Monthly', reqs:'Flexible timing, budget-constrained', hint:'basic'},
+];
+
+const TIER_COST = {premium: 18, standard: 11, basic: 6}; // cost-to-serve % of revenue
+
+let segAssignments = {}; // customerId -> tier
+
+function initSegmentation() {
+  const pool = document.getElementById('customer-pool');
+  if (!pool) return;
+  pool.innerHTML = '';
+  CUSTOMERS.forEach(cust => {
+    if (!segAssignments[cust.id]) {
+      pool.appendChild(makeChip(cust));
+    }
+  });
+  renderTierContents();
+}
+
+function makeChip(cust) {
+  const div = document.createElement('div');
+  div.className = 'seg-customer';
+  div.draggable = true;
+  div.id = 'chip-' + cust.id;
+  div.title = cust.reqs;
+  div.innerHTML = cust.icon + ' ' + cust.name;
+  div.addEventListener('dragstart', e => {
+    e.dataTransfer.setData('custId', cust.id);
+  });
+  return div;
+}
+
+function allowDrop(e) { e.preventDefault(); }
+
+function dropCustomer(e, tier) {
+  e.preventDefault();
+  const custId = e.dataTransfer.getData('custId');
+  if (!custId) return;
+  segAssignments[custId] = tier;
+  initSegmentation();
+  updateSegResults();
+  saveSegState();
+}
+
+function renderTierContents() {
+  ['premium','standard','basic'].forEach(tier => {
+    const zone = document.getElementById('drop-' + tier);
+    if (!zone) return;
+    zone.innerHTML = '';
+    CUSTOMERS.filter(c => segAssignments[c.id] === tier).forEach(cust => {
+      const chip = makeChip(cust);
+      chip.style.fontSize = '.72rem';
+      zone.appendChild(chip);
+    });
+  });
+}
+
+function updateSegResults() {
+  const assigned = Object.keys(segAssignments).length;
+  const wrap = document.getElementById('seg-justify-wrap');
+  const results = document.getElementById('seg-results');
+  if (assigned < 8) { if(results) results.style.display='none'; if(wrap) wrap.style.display='none'; return; }
+
+  // Calculate cost-to-serve
+  let rows = '';
+  let totalRev = 0, totalCost = 0;
+  CUSTOMERS.forEach(cust => {
+    const tier = segAssignments[cust.id] || 'basic';
+    const rev = parseFloat(cust.revenue.replace('$','').replace('M','')) * (cust.revenue.includes('K') ? 0.001 : 1);
+    const costPct = TIER_COST[tier];
+    const cost = rev * costPct / 100;
+    const profit = rev - cost;
+    totalRev += rev; totalCost += cost;
+    const recBg = tier === cust.hint ? 'rgba(16,185,129,.06)' : 'rgba(239,68,68,.05)';
+    const recColor = tier === cust.hint ? '#34d399' : '#f87171';
+    const recLabel = tier === cust.hint ? '✓ Good fit' : '⚠ Review';
+    rows += `<tr style="border-bottom:1px solid var(--border)">
+      <td style="padding:.45rem .6rem;font-size:.78rem;font-weight:500">${cust.icon} ${cust.name}</td>
+      <td style="padding:.45rem .6rem;font-size:.75rem;color:var(--gray2)">${cust.revenue}</td>
+      <td style="padding:.45rem .6rem"><span style="font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;padding:.15rem .4rem;border-radius:4px;background:${tier==='premium'?'rgba(239,68,68,.12)':tier==='standard'?'rgba(201,168,76,.12)':'rgba(59,130,246,.12)'};color:${tier==='premium'?'#f87171':tier==='standard'?'var(--gold)':'var(--blue2)'}">${tier}</span></td>
+      <td style="padding:.45rem .6rem;font-size:.75rem;color:var(--gray2)">${costPct}%</td>
+      <td style="padding:.45rem .6rem;font-size:.75rem;color:var(--green2)">$${profit.toFixed(2)}M</td>
+      <td style="padding:.45rem .6rem"><span style="font-size:.7rem;font-weight:600;background:${recBg};color:${recColor};padding:.15rem .4rem;border-radius:4px">${recLabel}</span></td>
+    </tr>`;
+  });
+  const margin = ((totalRev-totalCost)/totalRev*100).toFixed(1);
+  results.style.display = 'block';
+  document.getElementById('seg-results-body').innerHTML = `
+    <div style="overflow-x:auto">
+    <table style="width:100%;border-collapse:collapse">
+      <thead><tr style="border-bottom:1px solid var(--border2)">
+        <th style="padding:.35rem .6rem;font-size:.68rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--gray2);text-align:left">Customer</th>
+        <th style="padding:.35rem .6rem;font-size:.68rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--gray2);text-align:left">Revenue</th>
+        <th style="padding:.35rem .6rem;font-size:.68rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--gray2);text-align:left">Tier</th>
+        <th style="padding:.35rem .6rem;font-size:.68rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--gray2);text-align:left">Cost-to-Serve</th>
+        <th style="padding:.35rem .6rem;font-size:.68rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--gray2);text-align:left">Net Contribution</th>
+        <th style="padding:.35rem .6rem;font-size:.68rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--gray2);text-align:left">Assessment</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table></div>
+    <div style="display:flex;gap:1.5rem;margin-top:.8rem;padding:.7rem;background:var(--bg3);border-radius:7px;flex-wrap:wrap">
+      <div><div style="font-size:.68rem;color:var(--gray2);text-transform:uppercase;letter-spacing:.06em">Total Revenue</div><div style="font-size:1.1rem;font-weight:800;color:var(--white)">$${totalRev.toFixed(1)}M</div></div>
+      <div><div style="font-size:.68rem;color:var(--gray2);text-transform:uppercase;letter-spacing:.06em">Total Cost-to-Serve</div><div style="font-size:1.1rem;font-weight:800;color:var(--red2)">$${totalCost.toFixed(2)}M</div></div>
+      <div><div style="font-size:.68rem;color:var(--gray2);text-transform:uppercase;letter-spacing:.06em">Avg Net Margin</div><div style="font-size:1.1rem;font-weight:800;color:${margin>85?'var(--green2)':margin>80?'var(--amber2)':'var(--red2)'}">${margin}%</div></div>
+    </div>`;
+  if (wrap) wrap.style.display = 'block';
+}
+
+function saveSegmentation() {
+  const text = document.getElementById('seg-justify').value.trim();
+  if (!text) { notify('Add your justification','Explain your segmentation decisions before saving.','warn'); return; }
+  saveSegState();
+  document.getElementById('seg-saved').style.display = 'inline';
+  setTimeout(() => document.getElementById('seg-saved').style.display = 'none', 2500);
+  notify('Segmentation saved','Your tier assignments and justification have been saved.');
+}
+
+function saveSegState() {
+  const just = document.getElementById('seg-justify') ? document.getElementById('seg-justify').value : '';
+  try { localStorage.setItem('scm1010_ch2_seg_' + ST.id, JSON.stringify({assignments: segAssignments, justification: just})); } catch(e) {}
+}
+
+function loadSegState() {
+  try {
+    const d = localStorage.getItem('scm1010_ch2_seg_' + ST.id);
+    if (d) {
+      const p = JSON.parse(d);
+      segAssignments = p.assignments || {};
+      if (p.justification && document.getElementById('seg-justify')) {
+        document.getElementById('seg-justify').value = p.justification;
+      }
+    }
+  } catch(e) {}
+}
+
+
+// ══════════════════════════════════════════════
+// BUSINESS HEALTH DIAGNOSTIC
+// ══════════════════════════════════════════════
+const COMPANIES = [
+  {
+    id:'small',label:'Small Co.',icon:'🏪',name:'Bright & Clean Supply',
+    size:'Small — $4.2M annual revenue',
+    desc:'A small cleaning supplies distributor serving 40 local businesses and 3 small hospital clinics. Family-owned, 12 employees, single warehouse. Has been losing 2 accounts per quarter.',
+    revenue:4.2,
+    metrics:{
+      fill:{val:81,target:95,label:'Fill Rate',unit:'%'},
+      oct:{val:7.2,target:3.5,label:'Order Cycle Time',unit:'days',lower_better:true},
+      por:{val:64,target:90,label:'Perfect Order Rate',unit:'%'},
+      otd:{val:74,target:95,label:'On-Time Delivery',unit:'%'},
+      returns:{val:14,target:5,label:'Return Rate',unit:'%',lower_better:true},
+    },
+    hint:'At $4.2M revenue, an 81% fill rate means roughly $800K of demand goes unfilled annually. Each 1% improvement in OTD could retain 1 account worth ~$80K. The 14% return rate suggests picking errors.',
+    expert:'The most critical problem is the 81% fill rate — it is 14 points below the 95% target and is the direct cause of losing accounts. At $4.2M revenue, every percentage point of fill rate represents roughly $42K in at-risk sales. The 74% OTD and 14% return rate are secondary but connected: late deliveries and wrong orders destroy customer trust at exactly the moment competitors are calling. The first 30-day action is a physical inventory audit to identify the 10-15 SKUs responsible for most stockouts — small distributors almost always find that 80% of fill-rate failures come from 15-20% of their SKUs. Fix those with a modest safety stock increase and the fill rate will recover quickly. The return rate fix follows: implement a double-check scan at the pick station before packing.'
+  },
+  {
+    id:'mid',label:'Mid-Size Co.',icon:'🏭',name:'ProParts Industrial',
+    size:'Mid-size — $38M annual revenue',
+    desc:'A regional industrial parts distributor with 3 warehouses serving 200+ manufacturing clients. Has been hit by a competitor offering faster delivery. Lost one key account worth $2.1M last year.',
+    revenue:38,
+    metrics:{
+      fill:{val:93,target:97,label:'Fill Rate',unit:'%'},
+      oct:{val:5.8,target:2.5,label:'Order Cycle Time',unit:'days',lower_better:true},
+      por:{val:79,target:92,label:'Perfect Order Rate',unit:'%'},
+      otd:{val:86,target:96,label:'On-Time Delivery',unit:'%'},
+      csat:{val:71,target:88,label:'Customer Satisfaction',unit:'/100'},
+    },
+    hint:'At $38M revenue, a 4-point OTD gap (86% vs 96% target) represents roughly $3.8M in at-risk revenue annually. OCT of 5.8 days vs a competitor offering 2-day delivery is the strategic threat.',
+    expert:'The strategic crisis is order cycle time — 5.8 days when the competitor offers 2 days. This is why the $2.1M account left. No amount of fill rate improvement will retain customers who need faster delivery. The OCT problem is structural: ProParts likely routes all orders through a central processing step that adds 2-3 days. The 30-day priority is to map the order flow and identify where orders wait — usually in a processing queue or a slow pick system. A quick win: implement same-day processing for orders received before noon. The 79% perfect order rate is also telling — it means the warehouses are making errors under pressure, which is common when teams are rushing to compensate for slow systems. Fix the process, not the people.'
+  },
+  {
+    id:'large',label:'Large Co.',icon:'🏢',name:'NovaPack Consumer Goods',
+    size:'Large — $420M annual revenue',
+    desc:'A national consumer goods manufacturer supplying 800+ retail locations across 12 product categories. Has a sophisticated ERP system but has seen customer satisfaction scores fall 11 points in two years.',
+    revenue:420,
+    metrics:{
+      fill:{val:96,target:98.5,label:'Fill Rate',unit:'%'},
+      oct:{val:3.1,target:2.0,label:'Order Cycle Time',unit:'days',lower_better:true},
+      por:{val:88,target:95,label:'Perfect Order Rate',unit:'%'},
+      otd:{val:91,target:97,label:'On-Time Delivery',unit:'%'},
+      csat:{val:72,target:90,label:'Customer Satisfaction',unit:'/100'},
+    },
+    hint:'At $420M revenue, a 2.5-point fill rate gap represents $10.5M in unfilled demand. The 6-point OTD gap means roughly $25M of revenue is delivered late annually — at risk of chargeback penalties from major retailers.',
+    expert:'For a large company with good systems, an 18-point CSAT gap despite reasonable operational metrics is a warning sign that the problem is not in the numbers — it is in the customer experience around exceptions. When fill rate is 96%, the 4% that fails is handled badly: no proactive communication, slow backorder resolution, and poor complaint handling. The retailer does not care about the 96% that worked; they remember the 4% that did not. The 30-day priority is an exception management review: how does NovaPack communicate stockouts, backorders, and late shipments to customers? Implementing proactive outbound notification when an order will be late recovers more CSAT points per dollar than any operational fix.'
+  }
+];
+
+let activeDiagCompany = null;
+
+function initDiagnostic() {
+  const sel = document.getElementById('company-selector');
+  if (!sel) return;
+  sel.innerHTML = COMPANIES.map(co =>
+    `<button onclick="selectCompany('${co.id}')" id="cosel-${co.id}"
+      style="padding:.45rem 1rem;border-radius:7px;border:1px solid var(--border);background:none;color:var(--gray2);font-size:.8rem;font-weight:500;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:.4rem"
+    >${co.icon} ${co.label}: ${co.name}</button>`
+  ).join('');
+  loadDiagState();
+}
+
+function selectCompany(id) {
+  activeDiagCompany = COMPANIES.find(c => c.id === id);
+  document.getElementById('expert-analysis').style.display = 'none';
+  COMPANIES.forEach(co => {
+    const b = document.getElementById('cosel-' + co.id);
+    if (!b) return;
+    b.style.borderColor = co.id===id ? 'var(--gold)' : 'var(--border)';
+    b.style.background = co.id===id ? 'rgba(201,168,76,.1)' : 'none';
+    b.style.color = co.id===id ? 'var(--gold)' : 'var(--gray2)';
+  });
+  const co = activeDiagCompany;
+  document.getElementById('company-profile').style.display = 'grid';
+  document.getElementById('company-profile').innerHTML = `
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1.1rem">
+      <div style="font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:.5rem">Company Profile</div>
+      <div style="font-size:.92rem;font-weight:700;margin-bottom:.3rem">${co.icon} ${co.name}</div>
+      <div style="font-size:.78rem;color:var(--blue2);margin-bottom:.4rem">${co.size}</div>
+      <div style="font-size:.8rem;color:var(--gray3);line-height:1.6">${co.desc}</div>
+    </div>
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1.1rem">
+      <div style="font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--amber2);margin-bottom:.5rem">Your Role</div>
+      <div style="font-size:.8rem;color:var(--gray3);line-height:1.7">You have been brought in as a supply chain consultant. The CEO has given you these performance numbers and asked: <strong style="color:var(--white)">"What is wrong and what do we fix first?"</strong><br/><br/>Analyze the metrics, estimate the business impact, and give a prioritized recommendation.</div>
+    </div>`;
+  document.getElementById('perf-dashboard').style.display = 'block';
+  document.getElementById('perf-metrics').innerHTML = Object.entries(co.metrics).map(([key, m]) => {
+    const gap = m.lower_better ? m.val - m.target : m.target - m.val;
+    const isBad = gap > 5;
+    const isWarn = gap > 0 && gap <= 5;
+    const color = isBad ? 'var(--red2)' : isWarn ? 'var(--amber2)' : 'var(--green2)';
+    const status = isBad ? 'Below target' : isWarn ? 'Watch' : 'On target';
+    return `<div style="padding:1rem;border-right:1px solid var(--border);border-bottom:1px solid var(--border)">
+      <div style="font-size:.65rem;text-transform:uppercase;letter-spacing:.08em;color:var(--gray2);margin-bottom:.3rem">${m.label}</div>
+      <div style="font-size:1.6rem;font-weight:800;color:${color};line-height:1">${m.val}${m.unit}</div>
+      <div style="font-size:.7rem;color:var(--gray);margin-top:.25rem">Target: ${m.target}${m.unit}</div>
+      <div style="font-size:.7rem;color:${color};margin-top:.15rem;font-weight:600">${status}</div>
+    </div>`;
+  }).join('');
+  document.getElementById('diag-hint').innerHTML = '<strong style="color:var(--amber2)">Cost reference:</strong> ' + co.hint;
+  document.getElementById('diagnosis-area').style.display = 'block';
+  ['diag-a1','diag-a2','diag-a3'].forEach(id => { const el=document.getElementById(id); if(el)el.value=''; });
+}
+
+function revealAnswer() {
+  if (!activeDiagCompany) return;
+  const area = document.getElementById('expert-analysis');
+  area.style.display = 'block';
+  document.getElementById('expert-text').innerHTML = activeDiagCompany.expert.replace(/\. /g,'.<br/><br/>');
+  area.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function saveDiagnosis() {
+  if (!activeDiagCompany) { notify('Select a company first','Choose a company scenario before saving.','warn'); return; }
+  const a1 = document.getElementById('diag-a1').value.trim();
+  const a2 = document.getElementById('diag-a2').value.trim();
+  const a3 = document.getElementById('diag-a3').value.trim();
+  if (!a1 && !a2 && !a3) { notify('Nothing to save','Answer at least one question before saving.','warn'); return; }
+  try { localStorage.setItem('scm1010_ch2_diag_'+ST.id, JSON.stringify({company:activeDiagCompany.id,answers:{q1:a1,q2:a2,q3:a3},savedAt:new Date().toISOString()})); } catch(e) {}
+  document.getElementById('diag-saved').style.display='inline';
+  setTimeout(()=>document.getElementById('diag-saved').style.display='none',2500);
+  notify('Analysis saved','Your diagnosis has been saved.');
+}
+
+function loadDiagState() {
+  try {
+    const d = localStorage.getItem('scm1010_ch2_diag_'+ST.id);
+    if (d) {
+      const p = JSON.parse(d);
+      if (p.company) { selectCompany(p.company); setTimeout(()=>{ if(p.answers){ ['q1','q2','q3'].forEach(q=>{ const el=document.getElementById('diag-a'+q.slice(1)); if(el&&p.answers[q])el.value=p.answers[q]; }); } },200); }
+    }
+  } catch(e) {}
+}
+
+// ══════ NOTIFICATIONS ══════
+let ntimer=null;
+function notify(title,body,type){
+  const n=document.getElementById('notif');
+  document.getElementById('nt-t').textContent=title;
+  document.getElementById('nt-b').textContent=body;
+  n.className='notif '+(type||'success')+' show';
+  clearTimeout(ntimer);ntimer=setTimeout(()=>n.className='notif '+(type||'success'),3400);
+}
+
+// ══════ INIT ══════
+window.addEventListener('DOMContentLoaded',()=>{
+  buildQuiz();
+  revealElements();
+  renderOutcomes(SCENARIOS.normal);
+  window.addEventListener('resize',()=>{initSpectrum();});
+});
+</script>
+</body>
+</html>
